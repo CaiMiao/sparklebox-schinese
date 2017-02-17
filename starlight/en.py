@@ -56,7 +56,7 @@ SKILL_DESCRIPTIONS = {
     12: """使你的生命不会减少""",
     13: """使所有音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
     14: """消耗 <span class="let">{1}</span> 生命，PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并且NICE/BAD音符不会中断COMBO""",
-    15: """会发生有趣的事情""", #provisional
+    15: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并且只有PERFECT才能继续COMBO""", #provisional
     16: """会发生有趣的事情""", #provisional
     17: """使所有PERFECT音符恢复你 <span class="let">{0}</span> 点生命""",
     18: """使所有PERFECT/GREAT音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
