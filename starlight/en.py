@@ -61,7 +61,11 @@ SKILL_DESCRIPTIONS = {
     17: """使所有PERFECT音符恢复你 <span class="let">{0}</span> 点生命""",
     18: """使所有PERFECT/GREAT音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
     19: """使所有PERFECT/GREAT/NICE音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
-    24: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符恢复你 <span class="let">{2}</span> 点生命""",
+    20: """当前发动技能将被增强""", # depending on skill type? provisional
+    21: """当仅有Cute偶像存在于队伍时，获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符获得 <span class="let">{2}</span>% 的分数加成""",# if they don't mistake. provisional
+    22: """当仅有Cool偶像存在于队伍时，获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符获得 <span class="let">{2}</span>% 的分数加成""",# if they don't mistake. provisional
+    23: """当仅有Passion偶像存在于队伍时，获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符获得 <span class="let">{2}</span>% 的分数加成""",# if they don't mistake. provisional
+    24: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符恢复你 <span class="let">{2}</span> 点生命"""
 }
 
 REMOVE_HTML = re.compile(r"</?span[^>]*>")
@@ -79,12 +83,23 @@ def describe_skill_html(skill):
     fire_interval = skill.condition
     effect_val = skill.value
     # TODO symbols
-    if skill.skill_type in [1, 2, 3, 4, 14, 24]:
+    if skill.skill_type in [1, 2, 3, 4, 14, 15, 21, 22, 23, 24]:
         effect_val -= 100
+    elif skill.skill_type in [20]:
+        effect_val = (effect_val//10) - 100
+    
+    value_2 = skill.value_2
+    if skill.skill_type in [21, 22, 23]:
+        value_2 -= 100
 
     effect_clause = SKILL_DESCRIPTIONS.get(
+<<<<<<< HEAD
         skill.skill_type, "").format(effect_val, skill.skill_trigger_value, skill.value_2)
     interval_clause = """每 <span class="let">{0}</span> 秒，""".format(
+=======
+        skill.skill_type, "").format(effect_val, skill.skill_trigger_value, value_2)
+    interval_clause = """Every <span class="let">{0}</span> seconds:""".format(
+>>>>>>> 047b9d30b408f527e254c399e38147aa9614b458
         fire_interval)
     probability_clause = """有 <span class="var">{0}</span>% 的几率""".format(
         skill.chance())
