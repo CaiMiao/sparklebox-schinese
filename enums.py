@@ -59,9 +59,9 @@ skill_type = enum([
 
     20, "技能增强",
 
-    21, "Deep Cute",
-    22, "Deep Cool",
-    23, "Deep Passion",
+    21, "Cute集中",
+    22, "Cool集中",
+    23, "Passion集中",
 
     24, "全才"
 ])

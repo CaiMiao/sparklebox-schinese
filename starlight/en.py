@@ -61,10 +61,10 @@ SKILL_DESCRIPTIONS = {
     17: """使所有PERFECT音符恢复你 <span class="let">{0}</span> 点生命""",
     18: """使所有PERFECT/GREAT音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
     19: """使所有PERFECT/GREAT/NICE音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
-    20: """当前发动技能将被增强""", # depending on skill type? provisional
-    21: """当仅有Cute偶像存在于队伍时，获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符获得 <span class="let">{2}</span>% 的分数加成""",# if they don't mistake. provisional
-    22: """当仅有Cool偶像存在于队伍时，获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符获得 <span class="let">{2}</span>% 的分数加成""",# if they don't mistake. provisional
-    23: """当仅有Passion偶像存在于队伍时，获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符获得 <span class="let">{2}</span>% 的分数加成""",# if they don't mistake. provisional
+    20: """当前发动技能将被增强""",
+    21: """当仅有Cute偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
+    22: """当仅有Cool偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
+    23: """当仅有Passion偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     24: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符恢复你 <span class="let">{2}</span> 点生命"""
 }
 
@@ -145,10 +145,20 @@ def describe_lead_skill_html(skill):
             need_list.append("Passion")
 
         if need_list:
+<<<<<<< HEAD
             need_str = "、".join(need_list[:-1])
             need_str = "{0}和{1}".format(need_str, need_list[-1])
             predicate_clause = """当{0}属性的偶像存在于队伍时，""".format(need_str)
             built = "".join((predicate_clause, effect_clause))
+=======
+            if len(need_list) == 1:
+                need_str = need_list[0]
+            else:
+                need_str = ", ".join(need_list[:-1])
+                need_str = "{0}, and {1}".format(need_str, need_list[-1])
+            predicate_clause = """when there are {0} idols on the team.""".format(need_str)
+            built = " ".join((effect_clause, predicate_clause))
+>>>>>>> 8994575e9b1cc409b5bbf666df77354cb5731798
         else:
             built = effect_clause
         return built
