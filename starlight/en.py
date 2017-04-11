@@ -93,13 +93,8 @@ def describe_skill_html(skill):
         value_2 -= 100
 
     effect_clause = SKILL_DESCRIPTIONS.get(
-<<<<<<< HEAD
-        skill.skill_type, "").format(effect_val, skill.skill_trigger_value, skill.value_2)
-    interval_clause = """每 <span class="let">{0}</span> 秒，""".format(
-=======
         skill.skill_type, "").format(effect_val, skill.skill_trigger_value, value_2)
-    interval_clause = """Every <span class="let">{0}</span> seconds:""".format(
->>>>>>> 047b9d30b408f527e254c399e38147aa9614b458
+    interval_clause = """每 <span class="let">{0}</span> 秒，""".format(
         fire_interval)
     probability_clause = """有 <span class="var">{0}</span>% 的几率""".format(
         skill.chance())
@@ -145,20 +140,13 @@ def describe_lead_skill_html(skill):
             need_list.append("Passion")
 
         if need_list:
-<<<<<<< HEAD
-            need_str = "、".join(need_list[:-1])
-            need_str = "{0}和{1}".format(need_str, need_list[-1])
-            predicate_clause = """当{0}属性的偶像存在于队伍时，""".format(need_str)
-            built = "".join((predicate_clause, effect_clause))
-=======
             if len(need_list) == 1:
                 need_str = need_list[0]
             else:
-                need_str = ", ".join(need_list[:-1])
-                need_str = "{0}, and {1}".format(need_str, need_list[-1])
-            predicate_clause = """when there are {0} idols on the team.""".format(need_str)
-            built = " ".join((effect_clause, predicate_clause))
->>>>>>> 8994575e9b1cc409b5bbf666df77354cb5731798
+                need_str = "、".join(need_list[:-1])
+                need_str = "{0}和{1}".format(need_str, need_list[-1])
+            predicate_clause = """当{0}属性的偶像存在于队伍时，""".format(need_str)
+            built = "".join((predicate_clause, effect_clause))
         else:
             built = effect_clause
         return built
