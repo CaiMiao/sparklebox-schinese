@@ -42,7 +42,6 @@ def gap_date_range(a):
 # skill describer
 
 SKILL_DESCRIPTIONS = {
-<<<<<<< HEAD
     1: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成""",
     2: """使所有PERFECT/GREAT音符获得 <span class="let">{0}</span>% 的分数加成""",
     3: """使所有PERFECT/GREAT/NICE音符获得 <span class="let">{0}</span>% 的分数加成""", #provisional
@@ -67,32 +66,6 @@ SKILL_DESCRIPTIONS = {
     22: """当仅有Cool偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     23: """当仅有Passion偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     24: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符恢复你 <span class="let">{2}</span> 点生命"""
-=======
-    1: """Perfect notes will receive a <span class="let">{0}</span>% score bonus""",
-    2: """Great/Perfect notes will receive a <span class="let">{0}</span>% score bonus""",
-    3: """Nice/Great/Perfect notes will receive a <span class="let">{0}</span>% score bonus""", #provisional
-    4: """you will gain an extra <span class="let">{0}</span>% combo bonus""",
-    5: """Great notes will become Perfect notes""",
-    6: """Nice/Great notes will become Perfect notes""",
-    7: """Bad/Nice/Great notes will become Perfect notes""",
-    8: """all notes will become Perfect notes""", #provisional
-    9: """Nice notes will not break combo""",
-    10: """Bad/Nice notes will not break combo""", #provisional
-    11: """your combo will not be broken""", #provisional
-    12: """you will not lose health""",
-    13: """all notes will restore <span class="let">{0}</span> health""", #provisional
-    14: """<span class="let">{1}</span> life will be consumed, then: Perfect notes receive a <span class="let">{0}</span>% score bonus, and Nice/Bad notes will not break combo""",
-    15: """something interesting will happen""", #provisional
-    16: """something interesting will happen""", #provisional
-    17: """Perfect notes will restore <span class="let">{0}</span> health""",
-    18: """Great/Perfect notes will restore <span class="let">{0}</span> health""", #provisional
-    19: """Nice/Great/Perfect notes will restore <span class="let">{0}</span> health""", #provisional
-    20: """currently active skills will be boosted""",
-    21: """when there are only Cute idols on the team, Perfect notes will receive a <span class="let">{0}</span>% score bonus, and you will gain an extra <span class="let">{2}</span>% combo bonus""",
-    22: """when there are only Cool idols on the team, Perfect notes will receive a <span class="let">{0}</span>% score bonus, and you will gain an extra <span class="let">{2}</span>% combo bonus""",
-    23: """when there are only Passion idols on the team, Perfect notes will receive a <span class="let">{0}</span>% score bonus, and you will gain an extra <span class="let">{2}</span>% combo bonus""",
-    24: """you will gain an extra <span class="let">{0}</span>% combo bonus, and Perfect notes will restore <span class="let">{2}</span> health"""
->>>>>>> 3bcd6ccabad9ed7f2b109afedf5edd75c24c66f7
 }
 
 REMOVE_HTML = re.compile(r"</?span[^>]*>")
