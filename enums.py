@@ -161,12 +161,12 @@ skill_class = enum([
     17, "s_heal",
     18, "s_heal",
     19, "s_heal",
-    
-    20, "s_unknown",
 
-    21, "s_unknown",
-    22, "s_unknown",
-    23, "s_unknown",
+    20, "s_sb",
+
+    21, "s_focus",
+    22, "s_focus",
+    23, "s_focus",
 
     24, "s_allround",
 ])

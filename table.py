@@ -33,6 +33,10 @@ skill_type = filter_t("特技类型", (
     option_t("奶妈",      "s_heal"),
     option_t("血盾",    "s_life"),
     option_t("过载",    "s_overload")),
+    option_t("全才",   "s_allround"),
+    option_t("专注",     "s_perfelegant"),
+    option_t("技能增强", "s_sb"),
+    option_t("集中",       "s_focus")),
 lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
 
 high_stat = filter_t("偏高数值", (
