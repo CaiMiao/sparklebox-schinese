@@ -26,16 +26,16 @@ rarity = filter_t("卡牌稀有度", (
 lambda card: enums.floor_rarity(card.rarity) + "_kc")
 
 skill_type = filter_t("特技类型", (
-    option_t("强判", "s_pl"),
-    option_t("不断连",    "s_cprot"),
-    option_t("C分", "s_combobonus"),
-    option_t("P分", "s_scorebonus"),
-    option_t("奶妈",      "s_heal"),
-    option_t("血盾",    "s_life"),
-    option_t("过载",    "s_overload")),
-    option_t("全才",   "s_allround"),
-    option_t("专注",     "s_perfelegant"),
-    option_t("技能增强", "s_sb"),
+    option_t("强判",       "s_pl"),
+    option_t("不断连",     "s_cprot"),
+    option_t("C分",        "s_combobonus"),
+    option_t("P分",        "s_scorebonus"),
+    option_t("奶妈",       "s_heal"),
+    option_t("血盾",       "s_life"),
+    option_t("过载",       "s_overload"),
+    option_t("全才",       "s_allround"),
+    option_t("专注",       "s_perfelegant"),
+    option_t("技能增强",   "s_sb"),
     option_t("集中",       "s_focus")),
 lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
 
