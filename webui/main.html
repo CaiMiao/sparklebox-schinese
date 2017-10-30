@@ -70,9 +70,9 @@
         {% end %}
         <span class="item ext"></span>
         <span class="item right">
-          结束倒计时：<span class="counter" data-count-to="{{ gacha.end_date.timestamp() }}">(JS?)</span>
-          {% if gacha.rates != gacha.rates._REGULAR_RATES %}
-          <small>概率：R {{ gacha.rates.r }}% / SR {{ gacha.rates.sr }}% / SSR {{ gacha.rates.ssr }}%</small>
+          结束倒计时<span class="counter" data-count-to="{{ gacha.end_date.timestamp() }}">(JS?)</span>
+          {% if live_gacha_rates.get(gacha.id) and live_gacha_rates[gacha.id] != gacha.rates._REGULAR_RATES %}
+          <small>概率: R {{ gacha.rates.r }}% / SR {{ gacha.rates.sr }}% / SSR {{ gacha.rates.ssr }}%</small>
           {% end %}
         </span>
       </div>

@@ -86,7 +86,7 @@ gacha_rates_t = namedtuple("gacha_rates_t", ("r", "sr", "ssr"))
 # to be safe: define as exprs of int so the resulting floats will compare properly.
 # otherwise there may be a subtle difference between "8850/100" and "88.5"
 # and == will break.
-gacha_rates_t._REGULAR_RATES = gacha_rates_t(8850 / 100, 1000 / 100, 150 / 100)
+gacha_rates_t._REGULAR_RATES = gacha_rates_t(8500 / 100, 1200 / 100, 300 / 100)
 
 gacha_single_reward_t = namedtuple("gacha_single_reward_t",
     ("card_id", "is_limited", "sort_order", "relative_odds", "gsr_relative_odds"))
@@ -106,6 +106,10 @@ class DataCache(object):
         self.prime_caches()
         self.reset_statistics()
         self.load_date_jst = datetime.now(_JST).strftime('%Y-%m-%d %H:%M:%S.%f (JST)')# Just like utc format
+
+        self.live_cache = {
+            "gacha": {}
+        }
 
     def reset_statistics(self):
         self.vc_this = 0
@@ -514,6 +518,37 @@ class DataCache(object):
 
         return self.charas(pool)
 
+    def live_gacha_rates(self, gacha_t, done):
+        def update_livecache_for_gacha_rates(http, api_data):
+            if not api_data:
+                done(None)
+
+            try:
+                rate_dict = api_data[b"data"][b"gacha_rate"][b"charge"]
+
+                individual_rate_dict = {}
+                for k in {b"r", b"sr", b"ssr"}:
+                    cl = {X[b"card_id"]: float(X[b"charge_odds"]) for X in api_data[b"data"][b"idol_list"].get(k, [])}
+                    individual_rate_dict.update(cl)
+
+                self.live_cache["gacha"][gacha_t.id] = {
+                    "rates": gacha_rates_t(float(rate_dict[b"r"]), float(rate_dict[b"sr"]), float(rate_dict[b"ssr"])),
+                    "indiv": individual_rate_dict,
+                    "gacha": gacha_t.id,
+                }
+            finally:
+                done(self.live_cache["gacha"].get(gacha_t.id, None))
+
+        cached = self.live_cache["gacha"].get(gacha_t.id)
+
+        if cached is None:
+            if apiclient.is_usable():
+                apiclient.gacha_rates(gacha_t.id, update_livecache_for_gacha_rates)
+            else:
+                done(None)
+        else:
+            done(cached)
+
     def __del__(self):
         self.hnd.close()
 
@@ -546,6 +581,7 @@ def update_to_res_ver(res_ver):
             try:
                 do_preswitch_tasks(path, transient_data_path("{0}.mdb".format(data.version)) if data else None)
                 data = DataCache(res_ver)
+                apiclient.ApiClient.shared().res_ver = str(res_ver)
             except Exception as e:
                 print("do_preswitch_tasks croaked, update aborted.")
                 raise
@@ -570,24 +606,18 @@ def check_version_api_recv(response, msg):
         if res_ver != "-1":
             update_to_res_ver(res_ver)
         else:
-            print("no required_res_ver, did the app get a forced update?")
-            print("current APP_VER:", os.environ.get("VC_APP_VER"))
+            print("no required_res_ver, we're either on latest or app update available")
             is_updating_to_new_truth = 0
             # FIXME if data is none, we'll get stuck after this
     else:
-        print("we're on latest")
         is_updating_to_new_truth = 0
-
-def can_check_version():
-    return all([x in os.environ for x in ["VC_ACCOUNT", "VC_AES_KEY", "VC_SID_SALT"]]) \
-        and not os.getenv("DISABLE_AUTO_UPDATES", None)
 
 def check_version():
     global is_updating_to_new_truth, last_version_check
 
     if not is_updating_to_new_truth and (time() - last_version_check >= 3600
                                          or time() < last_version_check):
-        if not can_check_version():
+        if not apiclient.is_usable():
             return
 
         print("trace check_version")
@@ -620,11 +650,12 @@ def init():
     if explicit_vers and os.path.exists(transient_data_path("{0}.mdb".format(explicit_vers))):
         print("Loading mdb:", explicit_vers)
         data = DataCache(explicit_vers)
+        apiclient.ApiClient.shared().res_ver = str(explicit_vers)
     else:
         print("No mdb, let's download one")
 
         loop = ioloop.IOLoop.current()
-        if can_check_version():
+        if apiclient.is_usable():
             print("We have enough secrets to do an automatic version check")
             check_version()
         else:
