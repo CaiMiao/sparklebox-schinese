@@ -51,7 +51,7 @@ skill_type = enum([
     14, "过载",
 
     15, "专注",
-    16, "模仿",
+    16, "返场",
 
     17, "恢复生命",
     18, "恢复生命",
@@ -63,7 +63,8 @@ skill_type = enum([
     22, "Cool集中",
     23, "Passion集中",
 
-    24, "全才"
+    24, "全才",
+    25, "生命闪耀"
 ])
 
 skill_probability = enum([
@@ -169,6 +170,7 @@ skill_class = enum([
     23, "s_focus",
 
     24, "s_allround",
+    25, "s_cbonus_based_life",
 ])
 
 stat_dot = enum([

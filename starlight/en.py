@@ -58,7 +58,7 @@ SKILL_DESCRIPTIONS = {
     13: """使所有音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
     14: """消耗 <span class="let">{1}</span> 生命，PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并且NICE/BAD音符不会中断COMBO""",
     15: """使所有PERFECT音符获得 <span class="let">{0}</span> % 的分数加成，且使PERFECT判定区间的时间范围缩小""", #provisional
-    16: """会发生有趣的事情""", #provisional
+    16: """重复发动上一个其他偶像发动过的技能""",
     17: """使所有PERFECT音符恢复你 <span class="let">{0}</span> 点生命""",
     18: """使所有PERFECT/GREAT音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
     19: """使所有PERFECT/GREAT/NICE音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
@@ -66,7 +66,8 @@ SKILL_DESCRIPTIONS = {
     21: """当仅有Cute偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     22: """当仅有Cool偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     23: """当仅有Passion偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
-    24: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符恢复你 <span class="let">{2}</span> 点生命"""
+    24: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符恢复你 <span class="let">{2}</span> 点生命""",
+    25: """依据当前越多的生命值获得越多的额外COMBO加成""",
 }
 
 REMOVE_HTML = re.compile(r"</?span[^>]*>")
@@ -79,7 +80,7 @@ def describe_lead_skill(lskill):
 
 def describe_skill_html(skill):
     if skill is None:
-        return "No effect"
+        return "无效果"
 
     fire_interval = skill.condition
     effect_val = skill.value
@@ -121,6 +122,36 @@ LEADER_SKILL_PARAM = {
     6: "特技发动几率",
 }
 
+def build_lead_skill_predicate(skill):
+    need_list = []
+    if skill.need_cute:
+        need_list.append("Cute")
+    if skill.need_cool:
+        need_list.append("Cool")
+    if skill.need_passion:
+        need_list.append("Passion")
+
+    if not need_list:
+        return None
+
+    if len(need_list) == 1:
+        need_str = need_list[0]
+    else:
+        need_str = "、".join(need_list[:-1])
+        need_str = "{0}和{1}".format(need_str, need_list[-1])
+
+    # FIXME: consider values of need_x in leader_skill_t
+    #   Rei_Fan49 - Today at 5:36 PM
+    #   princess and focus only works for single color
+    #   it requires 5 or 6 per color
+    #   which implies monocolor team or no activation
+    #   cinfest team requires 1 each color (according to internal data)
+    if len(need_list) < 3:
+        need_str = "只有" + need_str
+
+    predicate_clause = """当{0}属性的偶像存在于队伍时，""".format(need_str)
+    return predicate_clause
+
 def describe_lead_skill_html(skill):
     if skill is None:
         return "无"
@@ -132,32 +163,18 @@ def describe_lead_skill_html(skill):
         effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>%。""".format(
             target_param, target_attr, skill.up_value)
 
-        need_list = []
-        if skill.need_cute:
-            need_list.append("Cute")
-        if skill.need_cool:
-            need_list.append("Cool")
-        if skill.need_passion:
-            need_list.append("Passion")
+        predicate_clause = build_lead_skill_predicate(skill)
+        if predicate_clause:
+            built = "".join((predicate_clause, effect_clause))
+        else:
+            built = effect_clause + "。"
+        return built
+    elif skill.up_type == 1 and skill.type == 30:
+        effect_clause = "完成LIVE时，额外获得特别奖励"
 
-        if need_list:
-            if len(need_list) == 1:
-                need_str = need_list[0]
-            else:
-                need_str = "、".join(need_list[:-1])
-                need_str = "{0}和{1}".format(need_str, need_list[-1])
-
-            # FIXME: consider values of need_x in leader_skill_t
-            #   Rei_Fan49 - Today at 5:36 PM
-            #   princess and focus only works for single color
-            #   it requires 5 or 6 per color
-            #   which implies monocolor team or no activation
-            #   cinfest team requires 1 each color (according to internal data)
-            if len(need_list) < 3:
-                need_str = "只有" + need_str
-
-            predicate_clause = """当{0}属性的偶像存在于队伍时，""".format(need_str)
-            built = " ".join((predicate_clause, effect_clause))
+        predicate_clause = build_lead_skill_predicate(skill)
+        if predicate_clause:
+            built = "".join((predicate_clause, effect_clause))
         else:
             built = effect_clause
         return built
