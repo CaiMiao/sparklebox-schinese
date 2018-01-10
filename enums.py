@@ -63,8 +63,13 @@ skill_type = enum([
     22, "Cool集中",
     23, "Passion集中",
 
+<<<<<<< HEAD
     24, "全才",
     25, "生命闪耀"
+=======
+    24, "All-Round",
+    25, "Life Sparkle"
+>>>>>>> 1c92c1f127c89ae3a06755dc1cdd634d528a108d
 ])
 
 skill_probability = enum([
