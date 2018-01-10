@@ -167,7 +167,7 @@ def describe_lead_skill_html(skill):
         if predicate_clause:
             built = "".join((predicate_clause, effect_clause))
         else:
-            built = effect_clause + "。"
+            built = effect_clause
         return built
     elif skill.up_type == 1 and skill.type == 30:
         effect_clause = "完成LIVE时，额外获得特别奖励"
