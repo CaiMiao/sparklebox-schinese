@@ -35,14 +35,6 @@
       </ul>
       {% end %}
 
-      {% if presence.gaps %}
-      <ul class="avlistentry_regular_melded">
-        {% for gap in presence.gaps %}
-        <li>此段时间不可用：{{ starlight.en.gap_date_range(gap) }}</li>
-        {% end %}
-        <li title="可能是由于此段时间推出了单属性限定扭蛋。"><span class="help">(为什么?)</span></li>
-      </ul>
-      {% end %}
     </li>
     {% end %}
 

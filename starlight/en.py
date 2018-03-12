@@ -68,6 +68,7 @@ SKILL_DESCRIPTIONS = {
     23: """当仅有Passion偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     24: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符恢复你 <span class="let">{2}</span> 点生命""",
     25: """依据当前越多的生命值获得越多的额外COMBO加成""",
+    26: """当Cute、Cool和Passion偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成/恢复你 <span class="let">{3}</span> 点生命，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
 }
 
 REMOVE_HTML = re.compile(r"</?span[^>]*>")
@@ -85,17 +86,18 @@ def describe_skill_html(skill):
     fire_interval = skill.condition
     effect_val = skill.value
     # TODO symbols
-    if skill.skill_type in [1, 2, 3, 4, 14, 15, 21, 22, 23, 24]:
+    if skill.skill_type in [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26]:
         effect_val -= 100
     elif skill.skill_type in [20]:
         effect_val = (effect_val//10) - 100
 
     value_2 = skill.value_2
-    if skill.skill_type in [21, 22, 23]:
+    if skill.skill_type in [21, 22, 23, 26]:
         value_2 -= 100
+    value_3 = skill.value_3
 
     effect_clause = SKILL_DESCRIPTIONS.get(
-        skill.skill_type, "").format(effect_val, skill.skill_trigger_value, value_2)
+        skill.skill_type, "").format(effect_val, skill.skill_trigger_value, value_2, value_3)
     interval_clause = """每 <span class="let">{0}</span> 秒，""".format(
         fire_interval)
     probability_clause = """有 <span class="var">{0}</span>% 的几率""".format(
@@ -177,6 +179,16 @@ def describe_lead_skill_html(skill):
             built = "".join((predicate_clause, effect_clause))
         else:
             built = effect_clause
+        return built
+    elif skill.up_type == 1 and skill.type == 40:
+        effect_clause = "Increases fan gain by <span class=\"let\">{0}</span>% when you finish a live".format(
+            skill.up_value)
+
+        predicate_clause = build_lead_skill_predicate(skill)
+        if predicate_clause:
+            built = " ".join((effect_clause, predicate_clause))
+        else:
+            built = effect_clause + "."
         return built
     else:
         return """此队长技能的内部描述格式未定义，请汇报此BUG。(up_type: {0}, type: {1})""".format(
