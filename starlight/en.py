@@ -178,17 +178,17 @@ def describe_lead_skill_html(skill):
         if predicate_clause:
             built = "".join((predicate_clause, effect_clause))
         else:
-            built = effect_clause
+            built = effect_clause + "。"
         return built
     elif skill.up_type == 1 and skill.type == 40:
-        effect_clause = "Increases fan gain by <span class=\"let\">{0}</span>% when you finish a live".format(
+        effect_clause = "完成LIVE时，使获得粉丝数提高 <span class=\"let\">{0}</span>%".format(
             skill.up_value)
 
         predicate_clause = build_lead_skill_predicate(skill)
         if predicate_clause:
             built = " ".join((effect_clause, predicate_clause))
         else:
-            built = effect_clause + "."
+            built = effect_clause + "。"
         return built
     else:
         return """此队长技能的内部描述格式未定义，请汇报此BUG。(up_type: {0}, type: {1})""".format(
