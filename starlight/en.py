@@ -43,6 +43,7 @@ def gap_date_range(a):
 
 
 SKILL_DESCRIPTIONS = {
+<<<<<<< HEAD
     1: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成""",
     2: """使所有PERFECT/GREAT音符获得 <span class="let">{0}</span>% 的分数加成""",
     3: """使所有PERFECT/GREAT/NICE音符获得 <span class="let">{0}</span>% 的分数加成""", #provisional
@@ -69,7 +70,39 @@ SKILL_DESCRIPTIONS = {
     24: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有PERFECT音符恢复你 <span class="let">{2}</span> 点生命""",
     25: """依据当前越多的生命值获得越多的额外COMBO加成""",
     26: """当Cute、Cool和Passion偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成/恢复你 <span class="let">{3}</span> 点生命，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
+=======
+    1: """that Perfect notes will receive a <span class="let">{0}</span>% score bonus""",
+    2: """that Great/Perfect notes will receive a <span class="let">{0}</span>% score bonus""",
+    3: """that Nice/Great/Perfect notes will receive a <span class="let">{0}</span>% score bonus""", #provisional
+    4: """that you will gain an extra <span class="let">{0}</span>% combo bonus""",
+    5: """that Great notes will become Perfect notes""",
+    6: """that Nice/Great notes will become Perfect notes""",
+    7: """that Bad/Nice/Great notes will become Perfect notes""",
+    8: """that all notes will become Perfect notes""", #provisional
+    9: """that Nice notes will not break combo""",
+    10: """that Bad/Nice notes will not break combo""", #provisional
+    11: """that your combo will not be broken""", #provisional
+    12: """that you will not lose health""",
+    13: """that all notes will restore <span class="let">{0}</span> health""", #provisional
+    14: """that <span class="let">{1}</span> life will be consumed, then: Perfect notes receive a <span class="let">{0}</span>% score bonus, and Nice/Bad notes will not break combo""",
+    15: """that Perfect notes will receive a <span class="let">{0}</span>% score bonus, but become harder to hit""", #provisional
+    16: """to activate the previous skill again""",
+    17: """that Perfect notes will restore <span class="let">{0}</span> health""",
+    18: """that Great/Perfect notes will restore <span class="let">{0}</span> health""", #provisional
+    19: """that Nice/Great/Perfect notes will restore <span class="let">{0}</span> health""", #provisional
+    20: """that currently active skills will be boosted""",
+    21: """that with only Cute idols on the team, Perfect notes will receive a <span class="let">{0}</span>% score bonus, and you will gain an extra <span class="let">{2}</span>% combo bonus""",
+    22: """that with only Cool idols on the team, Perfect notes will receive a <span class="let">{0}</span>% score bonus, and you will gain an extra <span class="let">{2}</span>% combo bonus""",
+    23: """that with only Passion idols on the team, Perfect notes will receive a <span class="let">{0}</span>% score bonus, and you will gain an extra <span class="let">{2}</span>% combo bonus""",
+    24: """that you will gain an extra <span class="let">{0}</span>% combo bonus, and Perfect notes will restore <span class="let">{2}</span> health""",
+    25: """that you will gain an extra combo bonus based on your current health""",
+    26: """that with all three types of idols on the team, you will gain an extra <span class="let">{2}</span>% combo bonus, and Perfect notes will receive a <span class="let">{0}</span>% score bonus plus restore <span class="let">{3}</span> HP,""",
+    27: """that Perfect notes will receive a <span class="let">{0}</span>% score bonus, and you will gain an extra <span class="let">{2}</span>% combo bonus""",
+>>>>>>> 40078afdabfaa4f3058879444f1bae06085d5690
 }
+
+SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27]
+SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL2 = [21, 22, 23, 26, 27]
 
 REMOVE_HTML = re.compile(r"</?span[^>]*>")
 
@@ -86,13 +119,13 @@ def describe_skill_html(skill):
     fire_interval = skill.condition
     effect_val = skill.value
     # TODO symbols
-    if skill.skill_type in [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26]:
+    if skill.skill_type in SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1:
         effect_val -= 100
     elif skill.skill_type in [20]:
         effect_val = (effect_val//10) - 100
 
     value_2 = skill.value_2
-    if skill.skill_type in [21, 22, 23, 26]:
+    if skill.skill_type in SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL2:
         value_2 -= 100
     value_3 = skill.value_3
 

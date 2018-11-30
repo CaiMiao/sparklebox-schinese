@@ -79,7 +79,7 @@ footer {
 /* chara_partial */
 .icon {
   display: inline-block;
-  background-image: url(../img/smarkers.png?v3);
+  background-image: url(../img/smarkers.png?v4);
   background-position: -48px -76px;
   width: 48px;
   height: 48px;
@@ -184,6 +184,11 @@ footer {
   width: 24px;
   height: 1px;
 }
+.icon.s_focus.s_focus_flat {
+  background-position: -51px -187px !important;
+  width: 24px !important;
+  height: 24px !important;
+}
 .icon.s_cbonus_based_life {
   background-position: 0px -187px;
   width: 24px;
@@ -191,6 +196,11 @@ footer {
 }
 .icon.s_mimic {
   background-position: -26px -187px;
+  width: 24px;
+  height: 24px;
+}
+.icon.s_synergy {
+  background-position: -76px -187px;
   width: 24px;
   height: 24px;
 }
@@ -224,8 +234,9 @@ footer {
   .icon.s_perfelegant,
   .icon.s_sb,
   .icon.s_cbonus_based_life,
-  .icon.s_mimic {
-    background-image: url(../img/smarkers@2x.png?v3);
+  .icon.s_mimic,
+  .icon.s_synergy {
+    background-image: url(../img/smarkers@2x.png?v4);
     background-size: 202px 288px;
     border-radius: 0px;
   }
@@ -563,6 +574,13 @@ td.Passion a {
 .name_tag .item.name {
   word-wrap: break-word;
 }
+.name_tag .item.name a {
+  color: white;
+  text-decoration: none;
+}
+.name_tag .item.name a:hover {
+  text-decoration: underline;
+}
 .name_tag .item {
   display: inline-block;
   vertical-align: middle;
@@ -599,6 +617,9 @@ td.Passion a {
 .name_tag.Passion {
   color: #222;
   background-color: #fca926;
+}
+.name_tag.Passion .name a {
+  color: #222;
 }
 .name_tag.Passion .title {
   background-color: #fdbd58;
@@ -922,7 +943,7 @@ span.var {
   display: block;
   width: 9px;
   height: 9px;
-  background: url("../img/smarkers.png?v2") -115px -26px no-repeat;
+  background: url("../img/smarkers.png?v4") -115px -26px no-repeat;
   content: "";
 }
 .icon.msprites.mm_vi::before {
@@ -944,7 +965,7 @@ span.var {
   display: block;
   width: 9px;
   height: 9px;
-  background: url("../img/smarkers.png?v3") -145px -22px no-repeat;
+  background: url("../img/smarkers.png?v4") -145px -22px no-repeat;
   content: "";
 }
 .icon.msprites.ms_pl::after {
@@ -980,6 +1001,12 @@ span.var {
 .icon.msprites.ms_focus::after {
   background-position: -26px -151px;
 }
+.icon.msprites.ms_focus.s_focus_flat::after {
+  background-position: -46px -151px !important;
+}
+.icon.msprites.ms_synergy::after {
+  background-position: -56px -151px;
+}
 .icon.msprites.ms_cbonus_based_life::after {
   background-position: -36px -151px;
 }
@@ -992,7 +1019,7 @@ span.var {
 @media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 13/10), only screen and (min-resolution: 120dpi) {
   .icon.msprites::after,
   .icon.msprites::before {
-    background-image: url("../img/smarkers@2x.png?v3") !important;
+    background-image: url("../img/smarkers@2x.png?v4") !important;
     background-size: 202px 288px!important;
   }
 }
