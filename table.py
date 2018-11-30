@@ -36,7 +36,7 @@ skill_type = filter_t("特技类型", (
     option_t("全才",       "s_allround"),
     option_t("专注",       "s_perfelegant"),
     option_t("技能增强",   "s_sb"),
-    option_t("集中",       "s_focus")),
+    option_t("集中",       "s_focus"),
     option_t("生命闪耀",   "s_cbonus_based_life"),
     option_t("返场",       "s_mimic"),
     option_t("三色协同",   "s_synergy")),
