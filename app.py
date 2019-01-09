@@ -1,5 +1,5 @@
 import locale
-locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
+locale.setlocale(locale.LC_ALL, "C.UTF-8")
 
 import tornado.httpserver
 import tornado.ioloop
