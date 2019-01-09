@@ -9,7 +9,7 @@ import sqlite3
 
 from datetime import datetime
 import locale
-locale.setlocale(locale.LC_ALL, "C.UTF-8")
+locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 
 from pytz import timezone, utc
 from collections import namedtuple

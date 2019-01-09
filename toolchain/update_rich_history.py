@@ -9,7 +9,7 @@ import models
 from collections import namedtuple, defaultdict
 
 import locale
-locale.setlocale(locale.LC_ALL, "C.UTF-8")
+locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 
 QUERY_GET_EVENT_STUBS       = "SELECT id, name, type, event_start, event_end FROM event_data"
 QUERY_GET_REWARDS_FOR_EVENT = "SELECT reward_id FROM event_available WHERE event_id = ? ORDER BY recommend_order"
