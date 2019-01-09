@@ -3,7 +3,7 @@ import json
 from pytz import utc
 from datetime import datetime
 import time
-from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, aliased, load_only
@@ -49,7 +49,7 @@ class TranslationSQL(object):
 
             try:
                 Base.metadata.create_all(self.engine)
-            except TypeError:
+            except (TypeError, ProgrammingError):
                 self.engine = create_engine(conn_s, echo=False)
                 Base.metadata.create_all(self.engine)
 
@@ -170,7 +170,7 @@ class TranslationSQL(object):
     def add_reward_tracking_entries(self, iterator):
         with self as s:
             for ent in iterator:
-                s.add(GachaRewardEntry(gacha_id=ent[0], step_num=ent[1], reward_id=ent[2], recommend_order=ent[3], limited_flag=ent[4]))
+                s.merge(GachaRewardEntry(gacha_id=ent[0], step_num=ent[1], reward_id=ent[2], recommend_order=ent[3], limited_flag=ent[4]))
             s.commit()
 
     @retry(5)
