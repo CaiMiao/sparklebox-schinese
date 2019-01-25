@@ -12,60 +12,60 @@ E = xhtml_escape
 option_t = namedtuple("option_t", ("name", "kill_class"))
 filter_t = namedtuple("filter_t", ("name", "options", "gen_object_class"))
 
-card_attribute = filter_t("Idol Attribute", (
+card_attribute = filter_t("偶像属性", (
     option_t("Cute",      "Cute_kc"),
     option_t("Cool",      "Cool_kc"),
     option_t("Passion",   "Passion_kc")),
 lambda card: enums.attribute(card.attribute) + "_kc")
 
-rarity = filter_t("Card Rarity", (
+rarity = filter_t("卡牌稀有度", (
     option_t("SSR", "ssr_kc"),
     option_t("SR",  "sr_kc"),
     option_t("R",   "r_kc"),
     option_t("N",   "n_kc")),
 lambda card: enums.floor_rarity(card.rarity) + "_kc")
 
-skill_type = filter_t("Skill Type", (
-    option_t("Perf. Lock*",  "s_pl"),
-    option_t("C. Guard",     "s_cprot"),
-    option_t("Combo Bonus",  "s_combobonus"),
-    option_t("Score Bonus",  "s_scorebonus"),
-    option_t("Healer",       "s_heal"),
-    option_t("H. Guard",     "s_life"),
-    option_t("Overload",     "s_overload"),
-    option_t("All-Round",    "s_allround"),
-    option_t("Concen.",      "s_perfelegant"),
-    option_t("Skill Boost",  "s_sb"),
-    option_t("Focus/Coord.", "s_focus"),
-    option_t("L. Sparkle",   "s_cbonus_based_life"),
-    option_t("Encore",       "s_mimic"),
-    option_t("T. Synergy",   "s_synergy")),
+skill_type = filter_t("特技类型", (
+    option_t("强判",       "s_pl"),
+    option_t("不断连",     "s_cprot"),
+    option_t("C分",        "s_combobonus"),
+    option_t("P分",        "s_scorebonus"),
+    option_t("奶妈",       "s_heal"),
+    option_t("血盾",       "s_life"),
+    option_t("过载",       "s_overload"),
+    option_t("全才",       "s_allround"),
+    option_t("专注",       "s_perfelegant"),
+    option_t("技能增强",   "s_sb"),
+    option_t("集中/协调",       "s_focus"),
+    option_t("生命闪耀",   "s_cbonus_based_life"),
+    option_t("返场",       "s_mimic"),
+    option_t("三色协同",   "s_synergy")),
 lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
 
-high_stat = filter_t("High stat", (
+high_stat = filter_t("偏高数值", (
     option_t("Vocal", "m_vo_kc"),
     option_t("Visual", "m_vi_kc"),
     option_t("Dance", "m_da_kc"),
-    option_t("Balanced", "m_ba_kc")),
+    option_t("均衡", "m_ba_kc")),
 lambda card: enums.stat_dot(card.best_stat) + "_kc")
 
-ls_target_type = filter_t("Target Type", (
-    option_t("All", "ca_all"),
+ls_target_type = filter_t("对象属性", (
+    option_t("所有", "ca_all"),
     option_t("Cute", "ca_cute"),
     option_t("Passion", "ca_passion"),
     option_t("Cool", "ca_cool")),
 lambda card: enums.lskill_effective_target(card.lead_skill.target_attribute) if card.lead_skill else None)
 
-ls_target_stat = filter_t("Target Stat", (
+ls_target_stat = filter_t("对象数值", (
     option_t("Vocal", "ce_vocal"),
     option_t("Visual", "ce_visual"),
     option_t("Dance", "ce_dance"),
-    option_t("All", "ce_anyappeal"),
+    option_t("所有", "ce_anyappeal"),
 
     option_t("<spacer>", ""),
 
-    option_t("Life", "ce_life"),
-    option_t("Skill Prob.", "ce_skill")),
+    option_t("生命", "ce_life"),
+    option_t("特技概率", "ce_skill")),
 lambda card: enums.lskill_effective_param(card.lead_skill.target_param) if card.lead_skill else None)
 
 # skill_table: CHSDE
@@ -81,7 +81,7 @@ class CardProfile(Datum):
 
     def make_headers(self):
         return (
-            """<th></th><th class="sort_key" data-sort-key="STCardNumberDatum">Card</th>"""
+            """<th></th><th class="sort_key" data-sort-key="STCardNumberDatum">卡牌</th>"""
         )
 
     def make_values(self, a_card):
@@ -90,7 +90,7 @@ class CardProfile(Datum):
             """<td class="{attr_class}"> <a href="/char/{card.chara_id}#c_{card.id}_head">{tle_translate}</a><br> <small>{tle_title}</small> </td>"""
         ).format(
             card=a_card,
-            tle_translate=starlight.data.translate_name(a_card.name_only),
+            tle_translate=a_card.name_only,#starlight.data.translate_name(a_card.name_only)
             tle_title=webutil.tlable(a_card.title) if a_card.title_flag else "",
             icon_id=webutil.icon(a_card.id),
             attr_class=E(enums.attribute(a_card.attribute))
@@ -119,7 +119,7 @@ class SkillName(Datum):
 
     def make_headers(self):
         return (
-            """<th>Skill</th>"""
+            """<th>特技</th>"""
         )
 
     def make_values(self, a_card):
@@ -136,11 +136,11 @@ class SkillEffect(Datum):
 
     def make_headers(self):
         return (
-            """<th>Effect (sort: """
-            """<span class="sort_key" data-sort-key="STSkillTimeDatum">time window</span>, """
-            """<span class="sort_key" data-sort-key="STSkillProcChanceDatum">% chance</span>, """
-            """<span class="sort_key" data-sort-key="STSkillDurationDatum">duration</span>, """
-            """<span class="sort_key" data-sort-key="STSkillEffectiveValueDatum">effect val.</span>"""
+            """<th>效果 (排序："""
+            """<span class="sort_key" data-sort-key="STSkillTimeDatum">时间间隔</span>, """
+            """<span class="sort_key" data-sort-key="STSkillProcChanceDatum">% 几率</span>, """
+            """<span class="sort_key" data-sort-key="STSkillDurationDatum">持续时间</span>, """
+            """<span class="sort_key" data-sort-key="STSkillEffectiveValueDatum">效果数值</span>"""
             """)</th>"""
         )
 
@@ -163,7 +163,7 @@ class LSkillName(Datum):
 
     def make_headers(self):
         return (
-            """<th>Lead Skill</th>"""
+            """<th>领队技能</th>"""
         )
 
     def make_values(self, a_card):
@@ -180,7 +180,7 @@ class LSkillEffect(Datum):
 
     def make_headers(self):
         return (
-            """<th>Effect (sort: <span class="sort_key" data-sort-key="STLeadSkillUpDatum">% up</span>)</th>"""
+            """<th>效果 (排序：<span class="sort_key" data-sort-key="STLeadSkillUpDatum">% up</span>)</th>"""
         )
 
     def make_values(self, a_card):

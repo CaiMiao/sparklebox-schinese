@@ -8,9 +8,9 @@
 
 {% block extra_info %}
 <ul>
-  <li>This gacha ends in <span class="counter" data-count-to="{{ gacha.end_date.timestamp() }}">(JS?)</span>.</li>
+  <li>该扭蛋结束时间：<span class="counter" data-count-to="{{ gacha.end_date.timestamp() }}">(JS?)</span>.</li>
   {% if rates and rates != gacha.rates._REGULAR_RATES %}
-  <li>This gacha has abnormal rates: R {{ rates.r }}% / SR {{ rates.sr }}% / SSR {{ rates.ssr }}%</li>
+  <li>该扭蛋含有非常规的排出率：R {{ rates.r }}% / SR {{ rates.sr }}% / SSR {{ rates.ssr }}%</li>
   {% end %}
 </ul>
 

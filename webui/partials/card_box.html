@@ -5,13 +5,13 @@
     <div class="rel">
       <img alt="thumbnail for card #{{ card.id }}" class="card_image" src="{{ image_host }}/card/{{ card.id }}.png" />
       <div class="hang_inside">
-        <a class="image_switch" href="javascript:void(0);" onclick="toggle_transform_state(this, pn(this, 4))">{{ _("Swap costume") }}</a>
+        <a class="image_switch" href="javascript:void(0);" onclick="toggle_transform_state(this, pn(this, 4))">{{ _("切换特训状态") }}</a>
       </div>
     </div>
 
-    <p class="card_image_offlink"><a class="sprite_link" target="_blank" href="{{ image_host }}/chara2/{{ card.chara.chara_id }}/{{ card.pose }}.png">{{ _("View sprite") }}</a></p>
-    <p class="card_image_offlink"><a class="petit_link" target="_blank" href="{{ image_host }}/puchi/{{ card.id }}.png">{{ _("Petit sprite") }}</a></p>
-    <p class="card_image_offlink"><a href="/card/{{ card.id }}/table">{{ _("Raw data table") }}</a></p>
+    <p class="card_image_offlink"><a class="sprite_link" target="_blank" href="{{ image_host }}/chara2/{{ card.chara.chara_id }}/{{ card.pose }}.png">{{ _("查看贴图") }}</a></p>
+    <p class="card_image_offlink"><a class="petit_link" target="_blank" href="{{ image_host }}/puchi/{{ card.id }}.png">{{ _("ぷちデレラ（Q版）贴图") }}</a></p>
+    <p class="card_image_offlink"><a href="/card/{{ card.id }}/table">{{ _("原始数据表") }}</a></p>
   </div>
   {% end %}
 
@@ -27,7 +27,8 @@
         <span class="icon {{ enums.skill_class(card.skill.skill_type) }}"
               title="{{ _(enums.skill_type(card.skill.skill_type)) }}"></span>
         {% end %}
-        <a href="/card/{{ card.id }}">{{ starlight.data.translate_name(card.name_only) }}</a>
+        <a href="/card/{{ card.id }}">{{ card.name_only }}</a>
+        <!--{{ starlight.data.translate_name(card.name_only) }}-->
         <small>[{{ enums.rarity(card.rarity) }}]</small>
       </span>
     </div>
@@ -39,10 +40,10 @@
           <img class="sign_view" src="{{ image_host }}/sign/{{ card.id }}.png" alt="{{ _("SSR Signature") }}" />
         {% end %}
       <div class="hang_inside">
-        <a class="image_switch" href="javascript:void(0);" onclick="toggle_transform_state(this, pn(this, 4))">{{ _("Swap costume") }}</a>
-        <a class="image_switch sprite_link" target="_blank" href="{{ image_host }}/chara2/{{ card.chara.chara_id }}/{{ card.pose }}.png">{{ _("View sprite") }}</a>
-        <a class="image_switch petit_link" target="_blank" href="{{ image_host }}/puchi/{{ card.id }}.png">{{ _("Petit sprite") }}</a>
-        <a class="image_switch" href="/card/{{ card.id }}/table">{{ _("Raw data table") }}</a>
+        <a class="image_switch" href="javascript:void(0);" onclick="toggle_transform_state(this, pn(this, 4))">{{ _("切换特训状态") }}</a>
+        <a class="image_switch sprite_link" target="_blank" href="{{ image_host }}/chara2/{{ card.chara.chara_id }}/{{ card.pose }}.png">{{ _("查看贴图") }}</a>
+        <a class="image_switch petit_link" target="_blank" href="{{ image_host }}/puchi/{{ card.id }}.png">{{ _("ぷちデレラ（Q版）贴图") }}</a>
+        <a class="image_switch" href="/card/{{ card.id }}/table">{{ _("原始数据表") }}</a>
       </div>
     </div>
     {% end %}
@@ -52,10 +53,10 @@
       <div id="sb_{{ _card.id }}" class="stats box {{ enums.attribute(_card.attribute) }}"
         {% if _card.id != card.id %}style="display:none"{% end %}>
         <div class="header">
-          <span class="item left">Base stats</span>
+          <span class="item left">基础数值</span>
           <span class="item ext"></span>
           <div class="item right">
-            {{ _("Regular") if _card.evolution_id else _("Transformed") }}:
+            {{ _("特训前") if _card.evolution_id else _("特训后") }}:
             Lv.
             <div class="stepper" data-stepper-max="{{ _card.rarity_dep.base_max_level }}">
               <button onclick="stats_step(this, {{ _card.id }}, -1)">-</button>
@@ -70,27 +71,27 @@
             <tr>
               <td rowspan="2" style="padding:0;"></td>
               <td class="life">{{ _card.hp_max }} <span style="font-size:80%">+{{ _card.bonus_hp }}</span></td>
-              <td class="vocal"><span class="var">{{ _card.vocal_min }}..{{ _card.vocal_max }}</span>
+              <td class="vocal"><span class="var">{{ _card.vocal_min }} ~ {{ _card.vocal_max }}</span>
                         <span style="font-size:80%">+{{ _card.bonus_vocal }}</span></td>
-              <td class="dance"><span class="var">{{ _card.dance_min }}..{{ _card.dance_max }}</span>
+              <td class="dance"><span class="var">{{ _card.dance_min }} ~ {{ _card.dance_max }}</span>
                         <span style="font-size:80%">+{{ _card.bonus_dance }}</span></td>
-              <td class="visual"><span class="var">{{ _card.visual_min }}..{{ _card.visual_max }}</span>
+              <td class="visual"><span class="var">{{ _card.visual_min }} ~ {{ _card.visual_max }}</span>
                          <span style="font-size:80%">+{{ _card.bonus_visual }}</span></td></tr>
 
-            <tr><th class="life_ax">Life</th>
+            <tr><th class="life_ax">生命</th>
               <th class="vocal_ax">Vocal</th>
               <th class="dance_ax">Dance</th>
               <th class="visual_ax">Visual</th></tr>
           </table>
 
           <table class="stats_table" style="display:inline-table">
-            <tr><td class="vocal"><span class="var">{{ _card.overall_min }}..{{ _card.overall_max }}</span>
+            <tr><td class="vocal"><span class="var">{{ _card.overall_min }} ~ {{ _card.overall_max }}</span>
                                   <span style="font-size:80%">+{{ _card.overall_bonus }}</span></td>
               <td class="kizuna">{{ _card.rarity_dep.max_love }}</td>
               <td class="max_level">{{ _card.rarity_dep.base_max_level }}</td></tr>
-            <tr><th class="vocal_ax">Overall Appeal</th>
-              <th class="kizuna_ax">Max Bond</th>
-              <th class="max_level_ax">Max Level</th></tr>
+            <tr><th class="vocal_ax">总计表现值</th>
+              <th class="kizuna_ax">最高亲密度</th>
+              <th class="max_level_ax">最高等级</th></tr>
           </table>
         </div>
       </div>
@@ -102,7 +103,7 @@
       {% if card.skill %}
       <div class="skill box {{ enums.attribute(card.attribute) }}">
         <div class="header">
-          <span class="item left">{{ _("Skill") }}</span>
+          <span class="item left">{{ _("特技") }}</span>
           <span class="item ext"></span>
           <div class="item right">{% raw tlable(card.skill.skill_name) %}
             <div class="stepper" data-stepper-max="10">
@@ -122,7 +123,7 @@
       {% if card.lead_skill %}
       <div class="skill box {{ enums.attribute(card.attribute) }}">
         <div class="header">
-          <span class="item left">{{ _("Leader Skill") }}</span>
+          <span class="item left">{{ _("领队技能") }}</span>
           <span class="item ext"></span>
           <span class="item right">{% raw tlable(card.lead_skill.name) %}</span>
         </div>
@@ -135,15 +136,15 @@
 
     <div class="va unbordered box {{ enums.attribute(card.attribute) }}" style="width:100%">
       <div class="header">
-        <span class="item left">{{ _("Lines") }}</span>
+        <span class="item left">{{ _("相关文本") }}</span>
         <span class="item ext"></span>
       </div>
       <div class="content">
         <div class="table_stub">
           {% if not request.is_low_bandwidth %}
-          <a class="image_switch" onclick="table('va_card_{{ card.id }}', this.parentNode)">Expand</a>
+          <a class="image_switch" onclick="table('va_card_{{ card.id }}', this.parentNode)">展开</a>
           {% else %}
-          <a class="image_switch" onclick="load_table('va_card_{{ card.id }}', 0, {{ [_card.id for _card in chain] }}, this)">Expand</a>
+          <a class="image_switch" onclick="load_table('va_card_{{ card.id }}', 0, {{ [_card.id for _card in chain] }}, this)">展开</a>
           {% end %}
         </div>
         <table style="display:none" id="va_card_{{ card.id }}" class="table">

@@ -15,7 +15,7 @@
     <script type="text/javascript" src="{{ handler.static_url("js/soundinliner.js") }}"></script>
     <script type="text/javascript" src="{{ handler.static_url("js/tlinject.js") }}"></script>
     {% if just_one_card %}
-    <title>Card: {{ enums.rarity(just_one_card.rarity) }} {{ just_one_card.chara.conventional }} (sldb)</title>
+    <title>卡牌：{{ enums.rarity(just_one_card.rarity) }} {{ just_one_card.chara.name }} (sldb)</title>
     {% else %}
     <title>{{ len(cards) }} cards (sldb)</title>
     {% end %}
@@ -29,7 +29,7 @@
       <div class="va unbordered box black" style="width:100%">
         <div class="content">
           <div class="table_stub" style="padding-top:10px">
-            <a class="image_switch" href="/char/{{ just_one_card.chara_id }}">All cards for {{ just_one_card.chara.conventional }}</a>
+            <a class="image_switch" href="/char/{{ just_one_card.chara_id }}">{{ just_one_card.chara.name }} 的所有卡牌</a>
           </div>
         </div>
       </div>

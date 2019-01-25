@@ -44,7 +44,8 @@ class TranslationSQL(object):
         if not self.really_connected:
             conn_s = self.connect_url or os.getenv("DATABASE_CONNECT")
             self.engine = create_engine(conn_s, echo=False,
-                connect_args={"ssl": {"dummy": "yes"}})
+                #connect_args={"ssl": {"dummy": "yes"}})
+		connect_args={'sslmode':'require'})
 
             try:
                 Base.metadata.create_all(self.engine)

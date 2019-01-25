@@ -15,7 +15,7 @@
     var CHARA_NAME = "{{ chara.conventional }}";
     </script>
     <script type="text/javascript" src="{{ handler.static_url("js/svex.js") }}"></script>
-    <title>Expressions: {{ chara.conventional }} (sldb)</title>
+    <title>表情：{{ chara.name }} (sldb)</title>
 </head>
 
 <body>
@@ -42,7 +42,7 @@
     <div class="va unbordered box black" style="width:100%">
       <div class="content">
         <div class="table_stub" style="padding-top:10px">
-          <a class="image_switch" href="/char/{{ chara.chara_id }}">Go back</a>
+          <a class="image_switch" href="/char/{{ chara.chara_id }}">返回</a>
         </div>
       </div>
     </div>

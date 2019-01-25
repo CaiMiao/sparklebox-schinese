@@ -1,11 +1,11 @@
-TL_ENABLED_TEXT = "<a href='javascript:;' onclick='tlinject_revert()'>Disable TLs</a> " +
-                  "(<a href='javascript:;' onclick='tlinject_about()'>What's this?</a>)"
-TL_DISABLED_TEXT = "<a href='javascript:;' onclick='tlinject_activate()'>Enable TLs</a> " +
-                   "(<a href='javascript:;' onclick='tlinject_about()'>What's this?</a>)"
-PROMPT_EXTRA_TEXT = "* The string you submit may be released as part of a public data dump. " +
-                      "These data dump(s) WILL NOT contain any metadata that can be used to identify you. " +
-                      "If you are not okay with that, click Cancel. \n" +
-                    "* Two asterisks '**' will remove the current translation. You usually don't need to do this."
+TL_ENABLED_TEXT = "<a href='javascript:;' onclick='tlinject_revert()'>禁用翻译</a> " +
+                  "(<a href='javascript:;' onclick='tlinject_about()'>啥玩意？</a>)"
+TL_DISABLED_TEXT = "<a href='javascript:;' onclick='tlinject_activate()'>启用翻译</a> " +
+                   "(<a href='javascript:;' onclick='tlinject_about()'>啥东西？</a>)"
+PROMPT_EXTRA_TEXT = "* 这些你提交的字串可能会被作为公共数据导出的一部分而被公开。" +
+                      "这些数据导出【并不会】包含任何能够识别你的信息，" +
+                      "如果你是手滑或者不同意，点取消。\n" +
+                    "* 两个星号 '**' 将会移除当前的翻译。通常你并不需要这么做。"
 
 if (!String.prototype.trim) {
     // polyfill from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim
@@ -30,7 +30,7 @@ function load_translations(trans, cb) {
 }
 
 function submit_tl_string(node, text) {
-    var sub = prompt("What is the English translation of '" + text + "'?\n\n" +
+    var sub = prompt("'" + text + "' 的翻译是啥？？？\n\n" +
         PROMPT_EXTRA_TEXT);
 
     if (sub === null) return;
@@ -111,6 +111,6 @@ function tlinject_revert() {
 }
 
 function tlinject_about() {
-    var banner = "This site uses crowd-sourced translations. If a phrase highlights in grey when you hover over it, you can click to submit a translation.";
+    var banner = "此站使用众包翻译。如果有句子在你悬停在上面时高亮显示，你可以点击并提交翻译。";
     alert(banner);
 }

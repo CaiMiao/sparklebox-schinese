@@ -88,9 +88,15 @@ class Home(HandlerSyncedWithMaster):
 @route("/suggest")
 class SuggestNames(HandlerSyncedWithMaster):
     def get(self):
-        names = {value.conventional.lower(): [value.conventional, key] for key, value in starlight.data.names.items()}
-        names.update({str(key): [value.conventional, key] for key, value in starlight.data.names.items()})
-
+        names = {value.conventional.lower(): [value.kanji, key] for key, value in starlight.data.names.items()}#conventional value.conventional
+        names.update({str(key): [value.kanji, key] for key, value in starlight.data.names.items()})#chara_id
+        
+        # additional keyword set
+        names.update({str(value.kana_spaced): [value.kanji, key] for key, value in starlight.data.names.items()})#kana_spaced
+        names.update({str(value.kanji): [value.kanji, key] for key, value in starlight.data.names.items()})#kanji
+        names.update({str(value.translated): [value.translated + " *" , key] for key, value in starlight.data.names.items()})#translated
+        names.update({str(value.translated_cht): [value.translated_cht + " *", key] for key, value in starlight.data.names.items()})#translated_cht
+		
         self.set_header("Content-Type", "application/json")
         self.set_header("Cache-Control", "no-cache")
         self.set_header("Expires", "0")
@@ -196,7 +202,7 @@ class ShortlinkTable(HandlerSyncedWithMaster):
         return starlight.data.card(starlight.data.chain(card.series_id)[-1])
 
     def rendertable(self, dataset, cards,
-                    allow_shortlink=1, table_name="Custom Table",
+                    allow_shortlink=1, table_name="自定义列表",
                     template="generictable.html", **extra):
         if isinstance(dataset, str):
             filters, categories = table.select_categories(dataset)
@@ -262,7 +268,7 @@ class CompareCard(ShortlinkTable):
         acard = starlight.data.cards(unique)
 
         if acard:
-            self.rendertable(dataset.upper(), acard, table_name="Custom Table")
+            self.rendertable(dataset.upper(), acard, table_name="自定义列表")
             self.settings["analytics"].analyze_request(
                 self.request, self.__class__.__name__, {"card_id": card_idlist})
         else:
@@ -310,10 +316,10 @@ class GachaTable(ShortlinkTable):
         self.filters, self.categories = table.select_categories("CASDE")
 
         lim_cat = table.CustomBool()
-        lim_cat.header_text = "Lm?"
+        lim_cat.header_text = "限？"
         lim_cat.values = limited_flags
-        lim_cat.yes_text = "Yes"
-        lim_cat.no_text = "No"
+        lim_cat.yes_text = "○"
+        lim_cat.no_text = "－"
         self.categories.insert(0, lim_cat)
 
         if is_current:
@@ -326,7 +332,7 @@ class GachaTable(ShortlinkTable):
             rel_odds = live_info["indiv"].copy()
             rel_odds.update({self.flip_chain(starlight.data.card(gr.card_id)).id:
                 rel_odds.get(gr.card_id, 0.0) for gr in self.availability_list})
-            odds_cat = table.CustomNumber(rel_odds, header_text="Chance", format="{0:.3f}%")
+            odds_cat = table.CustomNumber(rel_odds, header_text="几率", format="{0:.3f}%")
             self.categories.insert(1, odds_cat)
 
             live_rates = live_info["rates"]
@@ -336,7 +342,7 @@ class GachaTable(ShortlinkTable):
         self.rendertable( (self.filters, self.categories),
             cards=self.card_list,
             allow_shortlink=0,
-            table_name="Gacha: {0}".format(self.selected_gacha.name),
+            table_name="扭蛋: {0}".format(self.selected_gacha.name),
             template="ext_gacha_table.html",
             gacha=self.selected_gacha,
             rates=live_rates)

@@ -2,7 +2,7 @@
 {% if _a %}
 <div class="gacha_availability box {{ enums.attribute(card.attribute) }}">
   <div class="header">
-    <span class="item left">{{ _("Availability") }}</span>
+    <span class="item left">{{ _("卡池详情") }}</span>
     <span class="item ext"></span>
   </div>
   <div class="content">
@@ -12,7 +12,7 @@
     {% if presence.type == presence._TYPE_EVENT %}
 
     <li class="avlistentry_event  {{ "ga_available" if presence.start <= now < presence.end else "ga_unavailable" }}">
-      <strong class="{{ "ga_available" if presence.start <= now < presence.end else "ga_unavailable" }}">Event</strong>: {% raw tlable(presence.name) %}
+      <strong class="{{ "ga_available" if presence.start <= now < presence.end else "ga_unavailable" }}">活动</strong>: {% raw tlable(presence.name) %}
       <small>({{ starlight.en.availability_date_range(presence, now) }})</small>
     </li>
 
@@ -23,7 +23,7 @@
         {% if presence.name %}
         {% raw tlable(presence.name) %}
         {% else %}
-        Gacha
+        扭蛋
         {% end %}
       </strong>
 
@@ -31,9 +31,10 @@
 
       {% if presence.limited %}
       <ul class="avlistentry_regular_melded">
-        <li>This card is/was limited during the gacha period.</li>
+        <li>此卡牌在该扭蛋时段为限定卡牌。</li>
       </ul>
       {% end %}
+
     </li>
     {% end %}
 

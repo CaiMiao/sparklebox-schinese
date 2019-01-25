@@ -55,12 +55,12 @@ def _scale_skill_value(max_, min_, lv):
 
 def skill_chance(prob_def, ptype):
     maxv, minv = prob_def[ptype].probability_max, prob_def[ptype].probability_min
-    return "{0}..{1}".format(_scale_skill_value(maxv, minv, 0),
+    return "{0} ~ {1}".format(_scale_skill_value(maxv, minv, 0),
                              _scale_skill_value(maxv, minv, 9))
 
 def skill_dur(dur_def, ttype):
     maxv, minv = dur_def[ttype].available_time_max, dur_def[ttype].available_time_min
-    return "{0}..{1}".format(_scale_skill_value(maxv, minv, 0),
+    return "{0} ~ {1}".format(_scale_skill_value(maxv, minv, 0),
                              _scale_skill_value(maxv, minv, 9))
 
 def determine_best_stat(vo, vi, da):
@@ -105,6 +105,7 @@ class DataCache(object):
         self.class_cache = {}
         self.prime_caches()
         self.reset_statistics()
+        self.load_date_jst = datetime.now(_JST).strftime('%Y-%m-%d %H:%M:%S.%f (JST)')# Just like utc format
 
         self.live_cache = {
             "gacha": {}
@@ -230,11 +231,13 @@ class DataCache(object):
         return self.events(TODAY())
 
     def load_names(self):
+        translated = load_keyed_db_file(private_data_path("translated.csv"))
         overrides = load_keyed_db_file(private_data_path("overrides.csv"))
         names = load_keyed_db_file(transient_data_path("names.csv"))
 
         if not names:
             # then we can't get a schema
+            names.update(translated)
             names.update(overrides)
             return names
 
@@ -266,6 +269,26 @@ class DataCache(object):
             d.update(override_vals)
             names[real_key] = schema(**d)
 
+        # copies
+        for key in translated:
+            if key < 0:
+                # a negative chara id in the override entry means we should match on kanji.
+                real_key = by_kanji.get(translated[key].kanji)
+                intermediate = names.get(real_key)
+            else:
+                real_key = key
+                intermediate = names.get(key)
+
+            if intermediate is None:
+                continue
+
+            d = intermediate._asdict()
+            translated_vals = translated[key]._asdict()
+            # chara_id may differ if we indexed on kanji, so remove it
+            del translated_vals["chara_id"]
+            d.update(translated_vals)
+            names[real_key] = schema(**d)
+            
         return names
 
     def prime_caches(self):
@@ -342,6 +365,8 @@ class DataCache(object):
             kanji_spaced=lambda obj: self.names.get(obj.chara_id).kanji_spaced,
             kana_spaced=lambda obj:  self.names.get(obj.chara_id).kana_spaced,
             conventional=lambda obj: self.names.get(obj.chara_id).conventional,
+            translated=lambda obj: self.names.get(obj.chara_id).translated,
+            translated_cht=lambda obj: self.names.get(obj.chara_id).translated_cht,
             valist=lambda obj: []):
             self.char_cache[p.chara_id] = p
             self.primed_this["prm_char"] += 1

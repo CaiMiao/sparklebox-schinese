@@ -15,11 +15,12 @@
     <div class="table_stub" style="padding-top:10px">
       <a class="image_switch" href="http://cgdex.project-imas.com/?v=idols&o=Name%20LIKE%20%22{{ chara.conventional }}%22">CGdex</a>
       <a class="image_switch" href="http://www.project-imas.com/wiki/{{ starlight.en.westernized_name(chara).replace(" ", "_") }}">Project iM@S Wiki</a>
-      <a class="image_switch" href="/sprite_go_ex/{{ chara.chara_id }}">Many faces</a>
+      <a class="image_switch" href="https://zh.moegirl.org/index.php?search={{ chara.name }}" title="暂用搜索方式">萌娘百科</a>
+      <a class="image_switch" href="/sprite_go_ex/{{ chara.chara_id }}">表情贴图</a>
       {% if not request.is_low_bandwidth %}
-      <a class="image_switch" onclick="table('va_chara_{{ chara.chara_id }}', this)">Show character lines</a>
+      <a class="image_switch" onclick="table('va_chara_{{ chara.chara_id }}', this)">显示角色相关文本</a>
       {% else %}
-      <a class="image_switch" onclick="load_table('va_chara_{{ chara.chara_id }}', 1, [{{ chara.chara_id }}], this)">Show character lines</a>
+      <a class="image_switch" onclick="load_table('va_chara_{{ chara.chara_id }}', 1, [{{ chara.chara_id }}], this)">显示角色相关文本</a>
       {% end %}
     </div>
     <table style="display:none" id="va_chara_{{ chara.chara_id }}" class="table">

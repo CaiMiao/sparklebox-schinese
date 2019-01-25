@@ -1,6 +1,6 @@
 function assign_minmax_if_needed(ae) {
     if (!ae.getAttribute("data-max") || !ae.getAttribute("data-min")) {
-        var vals = ae.textContent.split("..");
+        var vals = ae.textContent.split(" ~ ");
         ae.setAttribute("data-min", vals[0]);
         ae.setAttribute("data-max", vals[1]);
     }
@@ -14,7 +14,7 @@ function reassign_vars_for_skill(that) {
         assign_minmax_if_needed(elems[i]);
 
         if (lv == 0) {
-            elems[i].textContent = elems[i].getAttribute("data-min") + ".." + elems[i].getAttribute("data-max");
+            elems[i].textContent = elems[i].getAttribute("data-min") + " ~ " + elems[i].getAttribute("data-max");
             continue;
         }
 
@@ -38,7 +38,7 @@ function reassign_vars_for_base(that) {
         assign_minmax_if_needed(elems[i]);
 
         if (lv == 0) {
-            elems[i].textContent = elems[i].getAttribute("data-min") + ".." + elems[i].getAttribute("data-max");
+            elems[i].textContent = elems[i].getAttribute("data-min") + " ~ " + elems[i].getAttribute("data-max");
             continue;
         }
 

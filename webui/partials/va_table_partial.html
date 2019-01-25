@@ -1,6 +1,6 @@
 <tr>
-  <th class="hides_under_mobile">{{ _("Usage") }}</th>
-  <th colspan="2">{{ _("Text") }}</th>
+  <th class="hides_under_mobile">{{ _("用途") }}</th>
+  <th colspan="2">{{ _("文本") }}</th>
 </tr>
 {% for current_va_id in va_id %}
   {% for id, usage, index, voice, text, override_utype in starlight.data.va_data(current_va_id) %}

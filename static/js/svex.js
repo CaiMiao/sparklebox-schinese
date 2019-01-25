@@ -63,7 +63,7 @@ function construct_crap_tree(ent) {
   a.setAttribute("id", "template_flist" + ent.id);
 
   root.querySelector("#template_buttons").innerHTML = (
-    '<a class="image_switch" href="javascript:;" onclick="svx_download_img(%s)">Download current composite</a>').replace(/\%s/g, ent.id);
+    '<a class="image_switch" href="javascript:;" onclick="svx_download_img(%s)">下载当前搭配表情图</a>').replace(/\%s/g, ent.id);
 
   return root.children[0];
 }

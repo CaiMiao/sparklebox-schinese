@@ -81,14 +81,14 @@ function toggle_kill_css(that) {
     var kill_css = null;
     if ((kill_css = document.head.querySelector("#" + cssid))) {
         kill_css.parentNode.removeChild(kill_css);
-        that.innerHTML = "X"
+        that.innerHTML = "○"
         that.classList.add("enabled")
     } else {
         kill_css = document.createElement("style");
         kill_css.textContent = "." + that.getAttribute("data-kill-class") + " { display:none; }"
         kill_css.id = cssid;
         document.head.appendChild(kill_css);
-        that.innerHTML = "&nbsp;"
+        that.innerHTML = "－"
         that.classList.remove("enabled")
     }
 

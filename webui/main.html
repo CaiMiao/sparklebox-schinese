@@ -23,7 +23,7 @@
   {% include header.html %}
 
   <div class="container">
-    <input type="text" id="search" placeholder="{{ _("Search for idols") }}" onkeyup="suggest(this, this.value)">
+    <input type="text" id="search" placeholder="{{ _("搜索爱豆") }}" onkeyup="suggest(this, this.value)">
     <div id="suggestions"></div>
   </div>
 
@@ -32,9 +32,9 @@
     <div class="birthday_banner r_{{ enums.attribute(char.type) }}" style="display:none" data-birthday="{{ char.birth_month }}/{{ char.birth_day }}">
       <div class="ribbon r_{{ enums.attribute(char.type) }}"></div>
       <div class="icon icon_{{ starlight.data.cards_belonging_to_char(char.chara_id)[-1] }}" style="position:absolute;top:5px;left:5px;"></div>
-      Today is <a href="/char/{{ char.chara_id }}">{{ starlight.en.westernized_name(char).split()[0] }}</a>'s
-      birthday (<span class="where_the_birthday_is"><!-- strings in home.js  --></span>)!
-      Happy birthday. ({{ char.birth_month }}/{{ char.birth_day }})
+      今天是 <a href="/char/{{ char.chara_id }}">{{ char.name }}</a> 的生日<small>（<span class="where_the_birthday_is"><!-- strings in home.js  --></span>）</small>。
+	  <!-- starlight.en.westernized_name(char).split()[0] --><br>
+      生日快乐！({{ char.birth_month }}/{{ char.birth_day }})
     </div>
     {% end %}
     <script> birthday_hider_init(); </script>
@@ -48,13 +48,13 @@
     <div class="box black">
       {% for event, reward_list in events_ %}
       <div class="header">
-        <span class="item left">Event: <b>{% raw tlable(event.name) %}</b></span>
+        <span class="item left">活动：<b>{% raw tlable(event.name) %}</b></span>
         <span class="item ext"></span>
-        <span class="item right">ends in <span class="counter" data-count-to="{{ event.end_date.timestamp() }}">(JS?)</span></span>
+        <span class="item right">结束倒计时：<span class="counter" data-count-to="{{ event.end_date.timestamp() }}">(JS?)</span></span>
       </div>
       <div class="content" style="background:#333;">
         <div class="iconex_row">
-          <span>You'd better start spending. <br> Event rewards:</span>
+          <span>开始肝吧。<br>活动奖励：</span>
           {% for cid in reward_list %}
           {% raw webutil.icon_ex(cid, request.is_low_bandwidth) %}
           {% end %}
@@ -64,15 +64,15 @@
       {% for gacha, available in la_cards_ %}
       <div class="header">
         {% if available %}
-        <span class="item left">Limited availability!</span>
+        <span class="item left">限定卡池氪氪氪！</span>
         {% else %}
-        <span class="item left">Current gacha</span>
+        <span class="item left">目前卡池</span>
         {% end %}
         <span class="item ext"></span>
         <span class="item right">
-          expires in <span class="counter" data-count-to="{{ gacha.end_date.timestamp() }}">(JS?)</span>
+          结束倒计时<span class="counter" data-count-to="{{ gacha.end_date.timestamp() }}">(JS?)</span>
           {% if live_gacha_rates.get(gacha.id) and live_gacha_rates[gacha.id] != gacha.rates._REGULAR_RATES %}
-          <small>rates: R {{ live_gacha_rates[gacha.id].r }}% / SR {{ live_gacha_rates[gacha.id].sr }}% / SSR {{ live_gacha_rates[gacha.id].ssr }}%</small>
+          <small>概率：R {{ live_gacha_rates[gacha.id].r }}% / SR {{ live_gacha_rates[gacha.id].sr }}% / SSR {{ live_gacha_rates[gacha.id].ssr }}%</small>
           {% end %}
         </span>
       </div>
@@ -83,11 +83,11 @@
           {% raw webutil.icon_ex(ent, request.is_low_bandwidth) %}
           {% end %}
         </div>
-        <a href="/gacha/{{ gacha.id }}">(full availability list)</a>
+        <a href="/gacha/{{ gacha.id }}">（完整可抽列表）</a>
       </div>
       {% else %}
       <div class="content" style="background:#333;text-align:left;">
-        <a href="/gacha/{{ gacha.id }}">(full availability list)</a>
+        <a href="/gacha/{{ gacha.id }}">（完整可抽列表）</a>
       </div>
       {% end %}
       {% end %}
@@ -118,7 +118,7 @@
   </div>
 
   <div class="container">
-    <p><a href="/history">More history</a></p>
+    <p><a href="/history">更多历史记录</a></p>
   </div>
 
   {% include partials/footer.html %}

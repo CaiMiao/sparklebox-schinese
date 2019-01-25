@@ -3,7 +3,7 @@
        --- the information below is only useful for devs, please ignore it ---<br><br>
 
            truth version {{ starlight.data.version }},
-           opened at {{ starlight.data.load_date }},
+           opened at {{ starlight.data.load_date_jst }},
            app version {{ starlight.display_app_ver() }}<br>
            did this page trigger a versioncheck? {{ "yes" if starlight.data.vc_this else "no" }}<br>
            did this page generate primes? {{ starlight.data.primed_this }}<br>
@@ -12,5 +12,6 @@
            {% end %}
     </small><br>
     <small>Report bugs/suggest features on <a href="https://github.com/summertriangle-dev/sparklebox">GitHub</a></small><br>
-    <small>The Holy Constituency of the Summer Triangle does not claim ownership of any content on this page.</small>
+    <small>中文翻译分支维护：<a href="https://github.com/CaiMiao/sparklebox-schinese">GitHub</a></small>
+    <small>该站的所有者并未声明拥有该页面下任何内容的所有权。</small>
 </footer>

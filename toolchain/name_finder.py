@@ -175,6 +175,7 @@ if __name__ == '__main__':
 
     missing = set(charas.keys()) - set(have_names.keys())
 
+
     for key in sorted(missing):
         chara = charas[key]
         print("---", chara.name, "----------")
@@ -206,7 +207,7 @@ if __name__ == '__main__':
 
     f = open(name_tab, "w")
     c = csv.writer(f, delimiter=",", quotechar="\"", quoting=csv.QUOTE_NONNUMERIC, lineterminator="\n")
-    c.writerow(("chara_id", "kanji", "kanji_spaced", "kana_spaced", "conventional"))
+    c.writerow(("chara_id", "kanji", "kanji_spaced", "kana_spaced", "conventional", "translated", "translated_cht"))
 
     for key in sorted(have_names.keys()):
         c.writerow(have_names[key])
