@@ -147,11 +147,15 @@ def extend_lead_skill(self, d):
     d["explain_en"] = starlight.en.describe_lead_skill(objproxy(d))
     d["target_attribute"] = enums.lskill_target_attr(d["target_attribute"])
     d["target_param"] = enums.lskill_target_param(d["target_param"])
+    d["target_attribute_2"] = enums.lskill_target_attr(d["target_attribute_2"])
+    d["target_param_2"] = enums.lskill_target_param(d["target_param_2"])
 
 def extend_card(self, d):
     d["rarity"] = d["rarity_dep"]
     del d["rarity_dep"]
 
+    d["sign_image_ref"] = "/".join((self.settings["image_host"], "sign", "{0}.png".format(d["id"]))) \
+        if d["has_sign"] else None
     d["spread_image_ref"] = "/".join((self.settings["image_host"], "spread", "{0}.png".format(d["id"]))) \
         if d["has_spread"] else None
     d["card_image_ref"] = "/".join((self.settings["image_host"], "card", "{0}.png".format(d["id"])))

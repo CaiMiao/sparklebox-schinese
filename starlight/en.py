@@ -70,10 +70,13 @@ SKILL_DESCRIPTIONS = {
     25: """依据当前越多的生命值获得越多的额外COMBO加成""",
     26: """当Cute、Cool和Passion偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成/恢复你 <span class="let">{3}</span> 点生命，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     27: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
+    28: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，及长按音符获得 <span class="let">{2}</span>% 的分数加成""",
+    29: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，及滑块音符获得 <span class="let">{2}</span>% 的分数加成""",
+    31: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有GREAT/NICE音符改判为PERFECT""",
 }
 
-SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27]
-SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL2 = [21, 22, 23, 26, 27]
+SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27, 28, 29, 31]
+SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL2 = [21, 22, 23, 26, 27, 28, 29]
 
 REMOVE_HTML = re.compile(r"</?span[^>]*>")
 
@@ -130,30 +133,30 @@ LEADER_SKILL_PARAM = {
 
 def build_lead_skill_predicate(skill):
     need_list = []
+    need_sum = 0
     if skill.need_cute:
         need_list.append("Cute")
+        need_sum += skill.need_cute
     if skill.need_cool:
         need_list.append("Cool")
+        need_sum += skill.need_cool
     if skill.need_passion:
         need_list.append("Passion")
+        need_sum += skill.need_passion
 
     if not need_list:
         return None
 
     if len(need_list) == 1:
         need_str = need_list[0]
+    elif len(need_list) == 2:
+        need_str = "{0} and {1}".format(*need_list)
     else:
         need_str = "、".join(need_list[:-1])
         need_str = "{0}和{1}".format(need_str, need_list[-1])
 
-    # FIXME: consider values of need_x in leader_skill_t
-    #   Rei_Fan49 - Today at 5:36 PM
-    #   princess and focus only works for single color
-    #   it requires 5 or 6 per color
-    #   which implies monocolor team or no activation
-    #   cinfest team requires 1 each color (according to internal data)
-    if len(need_list) < 3:
-        need_str = "只有" + need_str
+    if len(need_list) < 3 and need_sum >= 5:
+        need_str = "只有 " + need_str
 
     predicate_clause = """当{0}属性的偶像存在于队伍时，""".format(need_str)
     return predicate_clause
@@ -166,14 +169,14 @@ def describe_lead_skill_html(skill):
         target_attr = LEADER_SKILL_TARGET.get(skill.target_attribute, "<unknown>")
         target_param = LEADER_SKILL_PARAM.get(skill.target_param, "<unknown>")
 
-        effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>%。""".format(
+        effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>%""".format(
             target_param, target_attr, skill.up_value)
 
         predicate_clause = build_lead_skill_predicate(skill)
         if predicate_clause:
             built = "".join((predicate_clause, effect_clause))
         else:
-            built = effect_clause
+            built = effect_clause + "。"
         return built
     elif skill.up_type == 1 and skill.type == 30:
         effect_clause = "完成LIVE时，额外获得特别奖励"
@@ -187,6 +190,22 @@ def describe_lead_skill_html(skill):
     elif skill.up_type == 1 and skill.type == 40:
         effect_clause = "完成LIVE时，使获得粉丝数提高 <span class=\"let\">{0}</span>%".format(
             skill.up_value)
+
+        predicate_clause = build_lead_skill_predicate(skill)
+        if predicate_clause:
+            built = " ".join((effect_clause, predicate_clause))
+        else:
+            built = effect_clause + "。"
+        return built
+    elif skill.type == 50:
+        target_attr = LEADER_SKILL_TARGET.get(skill.target_attribute, "<unknown>")
+        target_param = LEADER_SKILL_PARAM.get(skill.target_param, "<unknown>")
+
+        target_attr_2 = LEADER_SKILL_TARGET.get(skill.target_attribute_2, "<unknown>")
+        target_param_2 = LEADER_SKILL_PARAM.get(skill.target_param_2, "<unknown>")
+
+        effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>%，{4}偶像的{3} <span class="let">{5}</span>%""".format(
+            target_param, target_attr, skill.up_value, target_param_2, target_attr_2, skill.up_value_2)
 
         predicate_clause = build_lead_skill_predicate(skill)
         if predicate_clause:
