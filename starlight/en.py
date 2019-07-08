@@ -62,7 +62,7 @@ SKILL_DESCRIPTIONS = {
     17: """使所有PERFECT音符恢复你 <span class="let">{0}</span> 点生命""",
     18: """使所有PERFECT/GREAT音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
     19: """使所有PERFECT/GREAT/NICE音符恢复你 <span class="let">{0}</span> 点生命""", #provisional
-    20: """当前发动技能将被增强""",
+    20: """增强当前发动技能的效果""",
     21: """当仅有Cute偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     22: """当仅有Cool偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     23: """当仅有Passion偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
@@ -73,6 +73,9 @@ SKILL_DESCRIPTIONS = {
     28: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，及长按音符获得 <span class="let">{2}</span>% 的分数加成""",
     29: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，及滑块音符获得 <span class="let">{2}</span>% 的分数加成""",
     31: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有GREAT/NICE音符改判为PERFECT""",
+    32: """增强Cute偶像的分数/COMBO加成技能的效果""",
+    33: """增强Cool偶像的分数/COMBO加成技能的效果""",
+    34: """增强Passion偶像的分数/COMBO加成技能的效果""",
 }
 
 SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27, 28, 29, 31]
@@ -120,6 +123,11 @@ LEADER_SKILL_TARGET = {
     2: "所有Cool",
     3: "所有Passion",
     4: "所有",
+
+    11: "Cute属性",
+    12: "Cool属性",
+    13: "Passion属性",
+    14: "所有属性",
 }
 
 LEADER_SKILL_PARAM = {
@@ -206,6 +214,26 @@ def describe_lead_skill_html(skill):
 
         effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>%，{4}偶像的{3} <span class="let">{5}</span>%""".format(
             target_param, target_attr, skill.up_value, target_param_2, target_attr_2, skill.up_value_2)
+
+        predicate_clause = build_lead_skill_predicate(skill)
+        if predicate_clause:
+            built = " ".join((effect_clause, predicate_clause))
+        else:
+            built = effect_clause + "。"
+        return built
+    elif skill.type == 60:
+        target_attr = LEADER_SKILL_TARGET.get(skill.target_attribute, "<unknown>")
+        target_param = LEADER_SKILL_PARAM.get(skill.target_param, "<unknown>")
+
+        target_attr_2 = LEADER_SKILL_TARGET.get(skill.target_attribute_2, "<unknown>")
+        target_param_2 = LEADER_SKILL_PARAM.get(skill.target_param_2, "<unknown>")
+
+        if target_param_2 != target_param:
+            effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>% (及进行{5}曲目的LIVE时提高 {3} <span class="let">{4}</span>%)""".format(
+                target_param, target_attr, skill.up_value, target_param_2, skill.up_value_2, target_attr_2)
+        else:
+            effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>% (进行{4}曲目的LIVE时则为<span class="let">{3}</span>%)""".format(
+                target_param, target_attr, skill.up_value, skill.up_value_2, target_attr_2)
 
         predicate_clause = build_lead_skill_predicate(skill)
         if predicate_clause:

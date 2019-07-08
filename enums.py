@@ -69,7 +69,11 @@ skill_type = enum([
     27, "协调",
     28, "PERFECT分数加成",
     29, "PERFECT分数加成",
-    31, "调音"
+    31, "调音",
+
+    32, "Cute合奏",
+    33, "Cool合奏",
+    34, "Passion合奏",
 ])
 
 skill_probability = enum([
@@ -180,7 +184,11 @@ skill_class = enum([
     27, "s_focus s_focus_flat",
     28, "s_psbvarianta",
     29, "s_psbvariantb",
-    31, "s_tuning"
+    31, "s_tuning",
+
+    32, "s_sb",
+    33, "s_sb",
+    34, "s_sb",
 ])
 
 stat_dot = enum([

@@ -60,6 +60,13 @@ class GachaPresenceEntry(Base):
     avail_start = Column(Integer, nullable=False)
     avail_end = Column(Integer, nullable=False)
 
+class EventLookupEntry(Base):
+    __tablename__ = TABLE_PREFIX + "_event_lookup"
+
+    card_id = Column(Integer, primary_key=True, nullable=False, autoincrement=False)
+    event_id = Column(Integer, primary_key=True, nullable=False)
+    acquisition_type = Column(Integer, primary_key=True, nullable=False, autoincrement=False)
+
 class HistoryEventEntry(Base):
     __tablename__ = TABLE_PREFIX + "_history_ex"
 
@@ -129,13 +136,13 @@ class HistoryEventEntry(Base):
 
     # -- extra_type_info bitfields for events:
     # (these are binary digits, not hex)
-    #      00000000 0SSAATTT
+    #      SSAA0000 TTTTTTTT
     # SS: Focus stat (for grooves), 0-4
     # AA: Attribute (for tokens), 0-4
     # TTT: Event type, 0-7
 
     def event_type(self):
-        return self.extra_type_info & 0x7
+        return self.extra_type_info & 0xFF
 
     # don't use these for now
     # def event_attribute(self):
