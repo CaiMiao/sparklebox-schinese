@@ -29,7 +29,7 @@ skill_type = filter_t("特技类型", (
     option_t("强判",       "s_pl"),
     option_t("不断连",     "s_cprot"),
     option_t("C分",        "s_combobonus"),
-    option_t("P分",        "s_scorebonus"),
+    option_t("P分",        "s_scorebonus s_psbvarianta s_psbvariantb s_psbvariantc"),
     option_t("奶妈",       "s_heal"),
     option_t("血盾",       "s_life"),
     option_t("过载",       "s_overload"),

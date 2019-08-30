@@ -408,7 +408,9 @@ class DataCache(object):
     def all_chara_id_to_cards(self):
         print("all_chara_id_to_cards")
         ret = defaultdict(lambda: [])
-        idl = self.hnd.execute("SELECT chara_id, id FROM card_data WHERE evolution_id != 0")
+        idl = self.hnd.execute("SELECT card_data.chara_id, card_data.id FROM card_data "
+            "INNER JOIN chara_data USING (chara_id) WHERE evolution_id != 0 AND base_card_id != 0 "
+            "ORDER BY card_data.chara_id")
         for cid, card in idl:
             ret[cid].append(card)
         return ret
@@ -622,7 +624,7 @@ def check_version():
         # usually updates happen on the hour so this keeps our
         # schedule on the hour too
         t = time()
-        last_version_check = t - (t % 3600) - 30
+        last_version_check = t - (t % 3600)
         apiclient.versioncheck(check_version_api_recv)
 
 is_updating_to_new_truth = 0

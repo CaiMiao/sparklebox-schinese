@@ -72,14 +72,15 @@ SKILL_DESCRIPTIONS = {
     27: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     28: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，及长按音符获得 <span class="let">{2}</span>% 的分数加成""",
     29: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，及滑块音符获得 <span class="let">{2}</span>% 的分数加成""",
+    30: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，及滑动音符获得 <span class="let">{2}</span>% 的分数加成""",
     31: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有GREAT/NICE音符改判为PERFECT""",
     32: """增强Cute偶像的分数/COMBO加成技能的效果""",
     33: """增强Cool偶像的分数/COMBO加成技能的效果""",
     34: """增强Passion偶像的分数/COMBO加成技能的效果""",
 }
 
-SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27, 28, 29, 31]
-SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL2 = [21, 22, 23, 26, 27, 28, 29]
+SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31]
+SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL2 = [21, 22, 23, 26, 27, 28, 29, 30]
 
 REMOVE_HTML = re.compile(r"</?span[^>]*>")
 
