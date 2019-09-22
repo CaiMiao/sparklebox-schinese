@@ -75,6 +75,10 @@ skill_type = enum([
     32, "Cute合奏",
     33, "Cool合奏",
     34, "Passion合奏",
+
+    35, "Vocal片断",
+    36, "Dance片断",
+    37, "Visual片断",
 ])
 
 skill_probability = enum([
@@ -191,6 +195,9 @@ skill_class = enum([
     32, "s_sb",
     33, "s_sb",
     34, "s_sb",
+    35, "s_motif",
+    36, "s_motif",
+    37, "s_motif",
 ])
 
 stat_dot = enum([

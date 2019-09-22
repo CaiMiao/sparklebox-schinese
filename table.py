@@ -12,13 +12,13 @@ E = xhtml_escape
 option_t = namedtuple("option_t", ("name", "kill_class"))
 filter_t = namedtuple("filter_t", ("name", "options", "gen_object_class"))
 
-card_attribute = filter_t("偶像属性", (
+card_attribute = filter_t("属性", (
     option_t("Cute",      "Cute_kc"),
     option_t("Cool",      "Cool_kc"),
     option_t("Passion",   "Passion_kc")),
 lambda card: enums.attribute(card.attribute) + "_kc")
 
-rarity = filter_t("卡牌稀有度", (
+rarity = filter_t("稀有度", (
     option_t("SSR", "ssr_kc"),
     option_t("SR",  "sr_kc"),
     option_t("R",   "r_kc"),
@@ -35,12 +35,16 @@ skill_type = filter_t("特技类型", (
     option_t("过载",       "s_overload"),
     option_t("全才",       "s_allround"),
     option_t("专注",       "s_perfelegant"),
-    option_t("技能增强",   "s_sb"),
+    option_t("技能增强",   "s_sb")),
+lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
+
+skill_type_row_2 = filter_t("特技类型", (
     option_t("集中/协调",  "s_focus"),
     option_t("生命闪耀",   "s_cbonus_based_life"),
     option_t("返场",       "s_mimic"),
     option_t("三色协同",   "s_synergy"),
-    option_t("调音",       "s_tuning")),
+    option_t("调音",       "s_tuning"),
+    option_t("片断",        "s_motif")),
 lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
 
 high_stat = filter_t("偏高数值", (
@@ -98,7 +102,7 @@ class CardProfile(Datum):
         )
 
 class SkillType(Datum):
-    applicable_filters = [skill_type]
+    applicable_filters = [skill_type, skill_type_row_2]
     uid = "S"
 
     def make_headers(self):
@@ -115,7 +119,7 @@ class SkillType(Datum):
             return """<td></td>"""
 
 class SkillName(Datum):
-    applicable_filters = [skill_type]
+    applicable_filters = [skill_type, skill_type_row_2]
     uid = "D"
 
     def make_headers(self):
@@ -132,7 +136,7 @@ class SkillName(Datum):
             return """<td></td>"""
 
 class SkillEffect(Datum):
-    applicable_filters = [skill_type]
+    applicable_filters = [skill_type, skill_type_row_2]
     uid = "E"
 
     def make_headers(self):
@@ -269,22 +273,28 @@ class CustomNumber(Datum):
     format = "{0}"
     header_text = ""
 
-    def __init__(self, values, header_text="", format=None):
+    def __init__(self, values, header_text="", format=None, hclass=None, dclass=None):
         self.header_text = header_text
         self.values = values
+        self.header_class = hclass or ""
 
         if format is not None:
-            self.format = "<td>" + format + "</td>"
+            self.format = "<td class=\"{0}\">".format(E(dclass or "")) + format + "</td>"
         else:
-            self.format = "<td>{0}</td>"
+            self.format = "<td class=\"{0}\">{{0}}</td>".format(E(dclass or ""))
 
     def make_headers(self):
         return (
-            """<th>{0}</th>"""
-        ).format(E(self.header_text))
+            """<th class="{1}">{0}</th>"""
+        ).format(E(self.header_text), E(self.header_class))
 
     def make_values(self, a_card):
         return self.format.format(self.values[a_card.id])
+
+class IndexedCustomNumber(CustomNumber):
+    # This class is intended to take the value of a column in a list of rows.
+    def make_values(self, ds):
+        return self.format.format(ds[self.values])
 
 uid_to_cls = {V.uid: V for V in Datum.__subclasses__()}
 
@@ -305,5 +315,5 @@ def select_categories(s):
     for c in cats:
         fils.extend(c.applicable_filters)
 
-    fils = sorted(set(fils))
+    fils = sorted(set(fils), key=lambda f: fils.index(f))
     return fils, cats
