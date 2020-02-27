@@ -80,6 +80,7 @@ SKILL_DESCRIPTIONS = {
     35: """使所有PERFECT音符获得<a href="/motif_internal/{0}?appeal=vocal">基于队伍Vocal表现值的分数加成</a>""",
     36: """使所有PERFECT音符获得<a href="/motif_internal/{0}?appeal=dance">基于队伍Dance表现值的分数加成</a>""",
     37: """使所有PERFECT音符获得<a href="/motif_internal/{0}?appeal=visual">基于队伍Visual表现值的分数加成</a>""",
+    38: """全3种属性偶像存在于队伍时，增强当前发动分数提高、COMBO加成、生命恢复技能的效果""",
 }
 
 SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31]
@@ -220,6 +221,9 @@ def describe_lead_skill_html(skill):
 
         effect_clause = """队伍只有{0}生效，并允许所有的特技效果值叠加""".format(
                 target_param)
+    elif skill.type == 80:
+        effect_clause = """Raises the XP, money, and friend points that you (and your guest's producer) receive by <span class="let">{0}</span>% when you finish a live""".format(
+            skill.up_value)
     else:
         return """此队长技能的内部描述格式未定义，请汇报此BUG。(up_type: {0}, type: {1})""".format(
             skill.up_type, skill.type

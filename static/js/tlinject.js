@@ -1,17 +1,40 @@
 TL_ENABLED_TEXT = "<a href='javascript:;' onclick='tlinject_revert()'>禁用翻译</a> " +
                   "(<a href='javascript:;' onclick='tlinject_about()'>啥玩意？</a>)"
-TL_DISABLED_TEXT = "<a href='javascript:;' onclick='tlinject_activate()'>启用翻译</a> " +
+TL_DISABLED_TEXT = "<a href='javascript:;' onclick='tlinject_enable()'>启用翻译</a> " +
                    "(<a href='javascript:;' onclick='tlinject_about()'>啥东西？</a>)"
-PROMPT_EXTRA_TEXT = "* 这些你提交的字串可能会被作为公共数据导出的一部分而被公开。" +
-                      "这些数据导出【并不会】包含任何能够识别你的信息，" +
+PROMPT_EXTRA_TEXT = "* 这些你提交的字串可能会被作为公共数据导出的一部分而被公开。 " +
+                      "这些数据导出【并不会】包含任何能够识别你的信息。 " +
                       "如果你是手滑或者不同意，点取消。\n" +
                     "* 两个星号 '**' 将会移除当前的翻译。通常你并不需要这么做。"
+TL_ENABLE_PREF_KEY = "sl$tlEnable"
+
+gTLInjectEnabled = false;
 
 if (!String.prototype.trim) {
     // polyfill from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim
     String.prototype.trim = function() {
         return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
     };
+}
+
+function env_default_enable_tlinject() {
+    var userLocale = navigator.languages? navigator.languages[0]
+        : (navigator.language || navigator.userLanguage)
+    
+    // Default: disable if user language is Japanese, otherwise enable.
+    if (userLocale.match(/ja([^A-Za-z]|$)/)) {
+        return false
+    }
+    return true
+}
+
+function should_enable_tlinject() {
+    var pref = localStorage.getItem(TL_ENABLE_PREF_KEY)
+    if (pref === null || (pref !== "true" && pref !== "false")) {
+        return env_default_enable_tlinject()
+    }
+
+    return pref === "true"? true : false
 }
 
 function load_translations(trans, cb) {
@@ -30,6 +53,11 @@ function load_translations(trans, cb) {
 }
 
 function submit_tl_string(node, text) {
+    if (!gTLInjectEnabled) {
+        alert("请在提交前按左下角的按钮启用翻译。")
+        return;
+    }
+
     var sub = prompt("'" + text + "' 的翻译是啥？？？\n\n" +
         PROMPT_EXTRA_TEXT);
 
@@ -86,28 +114,45 @@ function tlinject_activate() {
             strings[i].setAttribute("onclick", "event.preventDefault(); submit_tl_string(this, this.getAttribute('data-original-string'))")
     }
 
+    if (!should_enable_tlinject()) {
+        gTLInjectEnabled = false
+        tli_get_banner().innerHTML = TL_DISABLED_TEXT;
+        return;
+    }
+
+    gTLInjectEnabled = true
     load_translations(tls, function(tls2) {
         for (var i = 0; i < strings.length; i++) {
             strings[i].textContent = tls2[strings[i].textContent] || strings[i].textContent;
         }
-        var insert = 0;
-        var node = document.body.querySelector(".crowd_tl_notice");
-        if (!node) {
-            node = document.createElement("div");
-            node.className = "crowd_tl_notice";
-            insert = 1;
-        }
-        node.innerHTML = TL_ENABLED_TEXT;
-        if (insert) document.body.insertBefore(node, document.body.childNodes[0]);
+        tli_get_banner().innerHTML = TL_ENABLED_TEXT;
     })
 }
 
+function tli_get_banner() {
+    var node = document.body.querySelector(".crowd_tl_notice");
+    if (!node) {
+        node = document.createElement("div");
+        node.className = "crowd_tl_notice";
+        document.body.insertBefore(node, document.body.childNodes[0]);
+    }
+    return node
+}
+
 function tlinject_revert() {
+    localStorage.setItem(TL_ENABLE_PREF_KEY, "false")
+    gTLInjectEnabled = false
+
     var strings = document.getElementsByClassName("tlable")
     for (var i = 0; i < strings.length; i++) {
         strings[i].textContent = strings[i].getAttribute("data-original-string");
     }
-    document.body.querySelector(".crowd_tl_notice").innerHTML = TL_DISABLED_TEXT;
+    tli_get_banner().innerHTML = TL_DISABLED_TEXT;
+}
+
+function tlinject_enable() {
+    localStorage.setItem(TL_ENABLE_PREF_KEY, "true")
+    tlinject_activate()
 }
 
 function tlinject_about() {
