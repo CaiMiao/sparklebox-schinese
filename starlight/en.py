@@ -162,7 +162,7 @@ def build_lead_skill_predicate(skill):
     elif len(need_list) == 1:
         need_str = need_list[0]
     elif len(need_list) == 2:
-        need_str = "{0} and {1}".format(*need_list)
+        need_str = "{0} 与 {1}".format(*need_list)
     else:
         need_str = "、".join(need_list[:-1])
         need_str = "{0}和{1}".format(need_str, need_list[-1])
@@ -211,10 +211,10 @@ def describe_lead_skill_html(skill):
         target_param_2 = LEADER_SKILL_PARAM.get(skill.target_param_2, "<unknown>")
 
         if target_param_2 != target_param:
-            effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>% (及进行{5}曲目的LIVE时提高 {3} <span class="let">{4}</span>%)""".format(
+            effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>%（及进行{5}曲目的LIVE时提高 {3} <span class="let">{4}</span>%）""".format(
                 target_param, target_attr, skill.up_value, target_param_2, skill.up_value_2, target_attr_2)
         else:
-            effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>% (进行{4}曲目的LIVE时则为<span class="let">{3}</span>%)""".format(
+            effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>%（进行{4}曲目的LIVE时则为<span class="let">{3}</span>%）""".format(
                 target_param, target_attr, skill.up_value, skill.up_value_2, target_attr_2)
     elif skill.type == 70:
         target_param = LEADER_SKILL_PARAM.get(skill.param_limit, "<unknown>")
@@ -222,7 +222,7 @@ def describe_lead_skill_html(skill):
         effect_clause = """队伍只有{0}生效，并允许所有的特技效果值叠加""".format(
                 target_param)
     elif skill.type == 80:
-        effect_clause = """Raises the XP, money, and friend points that you (and your guest's producer) receive by <span class="let">{0}</span>% when you finish a live""".format(
+        effect_clause = """完成LIVE时，使获得的经验值/金钱/友情pt提高  <span class="let">{0}</span>%（Guest有效）""".format(
             skill.up_value)
     else:
         return """此队长技能的内部描述格式未定义，请汇报此BUG。(up_type: {0}, type: {1})""".format(
@@ -234,4 +234,4 @@ def describe_lead_skill_html(skill):
         built = " ".join((predicate_clause, effect_clause))
     else:
         built = effect_clause
-    return built + "."
+    return built + "。"
