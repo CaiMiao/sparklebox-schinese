@@ -10,19 +10,18 @@
   {% end %}
   <link rel="stylesheet" type="text/css" href="{{ image_host }}/icons2/icons_single.css?c={{ starlight.data.version }}" />
   <script type="text/javascript" src="{{ handler.static_url("js/home.js") }}"></script>
+  <script type="text/javascript" src="{{ handler.static_url("js/modal.js") }}"></script>
   <script type="text/javascript" src="{{ handler.static_url("js/tlinject.js") }}"></script>
   <style>.container { max-width:800px; } .box { margin:0; width:100%; }</style>
 
   <title>Starlight DB Main</title>
 </head>
 
-{% import random %}
-
 <body>
   {% include header.html %}
 
   <div class="container">
-    <input type="text" id="search" placeholder="{{ _("搜索爱豆") }}" onkeyup="suggest(this, this.value)">
+    <input type="text" id="search" class="text_field" placeholder="{{ _("搜索偶像") }}" onkeyup="suggest(this, this.value)">
     <div id="suggestions"></div>
   </div>
 
@@ -40,57 +39,19 @@
   </div>
 
   <div class="container">
-    {% set events_ = list(events) %}
-    {% set la_cards_ = list(la_cards) %}
+    <p>当前活动与扭蛋：</p>
+    {% for history_entry in current_history %}
 
-    {% if any((events_, la_cards_)) %}
-    <div class="box black">
-      {% for event, reward_list in events_ %}
-      <div class="header">
-        <span class="item left">活动：<b>{% raw tlable(event.name) %}</b></span>
-        <span class="item ext"></span>
-        <span class="item right">结束倒计时：<span class="counter" data-count-to="{{ event.end_date.timestamp() }}">(JS?)</span></span>
-      </div>
-      <div class="content" style="background:#333;">
-        <div class="iconex_row">
-          <span>开始肝吧。<br>活动奖励：</span>
-          {% for cid in reward_list %}
-          {% raw webutil.icon_ex(cid, request.is_low_bandwidth) %}
-          {% end %}
-        </div>
-      </div>
-      {% end %}
-      {% for gacha, available in la_cards_ %}
-      <div class="header">
-        {% if available %}
-        <span class="item left">限定卡池氪氪氪！</span>
-        {% else %}
-        <span class="item left">目前卡池</span>
-        {% end %}
-        <span class="item ext"></span>
-        <span class="item right">
-          结束倒计时：<span class="counter" data-count-to="{{ gacha.end_date.timestamp() }}">(JS?)</span>
-          {% if live_gacha_rates.get(gacha.id) and live_gacha_rates[gacha.id] != gacha.rates._REGULAR_RATES %}
-          <small>概率：R {{ live_gacha_rates[gacha.id].r }}% / SR {{ live_gacha_rates[gacha.id].sr }}% / SSR {{ live_gacha_rates[gacha.id].ssr }}%</small>
-          {% end %}
-        </span>
-      </div>
-      {% if available %}
-      <div class="content" style="background:#333;text-align:left;">
-        <div class="iconex_row">
-          {% for ent in available %}
-          {% raw webutil.icon_ex(ent, request.is_low_bandwidth) %}
-          {% end %}
-        </div>
-        <a href="/gacha/{{ gacha.id }}">（完整可抽列表）</a>
-      </div>
-      {% else %}
-      <div class="content" style="background:#333;text-align:left;">
-        <a href="/gacha/{{ gacha.id }}">（完整可抽列表）</a>
-      </div>
-      {% end %}
-      {% end %}
-    </div>
+    {% if history_entry.type() == 2 %}
+      {% module Template("partials/hist_event.html", history_entry=history_entry, countdown=True) %}
+    {% elif history_entry.type() == 3 %}
+      {% module Template("partials/hist_gacha.html", history_entry=history_entry, rates_src=live_gacha_rates, countdown=True) %}
+    {% elif history_entry.type() == 4 %}
+      {% module Template("partials/hist_new_ns.html", history_entry=history_entry) %}
+    {% else %}
+      {# omitted #}
+    {% end %}
+
     {% end %}
   </div>
 
@@ -104,11 +65,11 @@
     {% for history_entry in history %}
 
     {% if history_entry.type() == 2 %}
-      {% include partials/hist_event.html %}
+      {% module Template("partials/hist_event.html", history_entry=history_entry, countdown=False) %}
     {% elif history_entry.type() == 3 %}
-      {% include partials/hist_gacha.html %}
+      {% module Template("partials/hist_gacha.html", history_entry=history_entry, rates_src=live_gacha_rates, countdown=False) %}
     {% elif history_entry.type() == 4 %}
-      {% include partials/hist_new_ns.html %}
+      {% module Template("partials/hist_new_ns.html", history_entry=history_entry) %}
     {% else %}
       {# omitted #}
     {% end %}

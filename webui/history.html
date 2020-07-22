@@ -10,6 +10,7 @@
   {% end %}
   <link rel="stylesheet" type="text/css" href="{{ image_host }}/icons2/icons.css?c={{ starlight.data.version }}" />
   <link rel="stylesheet" type="text/css" href="{{ image_host }}/icons2/icons@2x.css?c={{ starlight.data.version }}" />
+  <script type="text/javascript" src="{{ handler.static_url("js/modal.js") }}"></script>
   <script type="text/javascript" src="{{ handler.static_url("js/tlinject.js") }}"></script>
   <style>.container { max-width:800px; } .box { margin:0; width:100%; }</style>
   <title>History (sldb)</title>
@@ -22,11 +23,11 @@
     {% for history_entry in history %}
 
     {% if history_entry.type() == 2 %}
-      {% include partials/hist_event.html %}
+      {% module Template("partials/hist_event.html", history_entry=history_entry, countdown=False) %}
     {% elif history_entry.type() == 3 %}
-      {% include partials/hist_gacha.html %}
+      {% module Template("partials/hist_gacha.html", history_entry=history_entry, rates_src={}, countdown=False) %}
     {% elif history_entry.type() == 4 %}
-      {% include partials/hist_new_ns.html %}
+      {% module Template("partials/hist_new_ns.html", history_entry=history_entry) %}
     {% else %}
       {# omitted #}
     {% end %}

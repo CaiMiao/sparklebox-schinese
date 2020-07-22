@@ -2,10 +2,9 @@ TL_ENABLED_TEXT = "<a href='javascript:;' onclick='tlinject_revert()'>禁用翻�
                   "(<a href='javascript:;' onclick='tlinject_about()'>啥玩意？</a>)"
 TL_DISABLED_TEXT = "<a href='javascript:;' onclick='tlinject_enable()'>启用翻译</a> " +
                    "(<a href='javascript:;' onclick='tlinject_about()'>啥东西？</a>)"
-PROMPT_EXTRA_TEXT = "* 这些你提交的字串可能会被作为公共数据导出的一部分而被公开。 " +
-                      "这些数据导出【并不会】包含任何能够识别你的信息。 " +
-                      "如果你是手滑或者不同意，点取消。\n" +
-                    "* 两个星号 '**' 将会移除当前的翻译。通常你并不需要这么做。"
+PROMPT_EXTRA_TEXT = "晦涩地说：这些你提交的字串可能会被作为公共数据导出的一部分而被公开。\n" +
+                    "这些数据导出【并不会】包含任何能够识别你的信息。\n" +
+                    "（如果你是手滑或者不同意，请点取消。）"
 TL_ENABLE_PREF_KEY = "sl$tlEnable"
 
 gTLInjectEnabled = false;
@@ -20,7 +19,7 @@ if (!String.prototype.trim) {
 function env_default_enable_tlinject() {
     var userLocale = navigator.languages? navigator.languages[0]
         : (navigator.language || navigator.userLanguage)
-    
+
     // Default: disable if user language is Japanese, otherwise enable.
     if (userLocale.match(/ja([^A-Za-z]|$)/)) {
         return false
@@ -54,38 +53,44 @@ function load_translations(trans, cb) {
 
 function submit_tl_string(node, text) {
     if (!gTLInjectEnabled) {
-        alert("请在提交前按左下角的按钮启用翻译。")
+        tlinject_text_alert("请在提交前按左下角的按钮启用翻译。")
         return;
     }
 
-    var sub = prompt("'" + text + "' 的翻译是啥？？？\n\n" +
-        PROMPT_EXTRA_TEXT);
-
-    if (sub === null) return;
-
-    sub = sub.trim()
-    if (sub == "") return;
-
-    var xhr = new XMLHttpRequest()
-    xhr.open("POST", "/api/v1/send_tl", true)
-    xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8")
-    xhr.setRequestHeader("X-Blessing",
-        "This request bears the blessing of an Ascended Constituent of the Summer Triangle, granting it the entitlement of safe passage.")
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
-            if (xhr.status == 200) {
-                var table = {}
-                table[text] = sub;
-                set_strings_by_table(table);
-            } else {
-                var j = JSON.parse(xhr.responseText);
-                if (j.error) {
-                    alert('Failed to submit translation. The server said: "' + j.error + '"');
+    tlinject_prompt(text,
+        function(submitText) {
+            if (submitText) {
+                submitText = submitText.trim()
+                if (submitText == "") {
+                    return;
                 }
             }
-        }
-    }
-    xhr.send(JSON.stringify({key: text, tled: sub, security: node.getAttribute("data-summertriangle-assr")}))
+
+            var request = {
+                key: text,
+                tled: submitText,
+                security: node.getAttribute("data-summertriangle-assr")
+            }
+
+            var xhr = new XMLHttpRequest()
+            xhr.open("POST", "/api/v1/send_tl", true)
+            xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8")
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        var table = {}
+                        table[text] = submitText? submitText : text;
+                        set_strings_by_table(table);
+                    } else {
+                        var j = JSON.parse(xhr.responseText);
+                        if (j.error) {
+                            tlinject_text_alert('Failed to submit translation. The server said: "' + j.error + '"');
+                        }
+                    }
+                }
+            }
+            xhr.send(JSON.stringify(request));
+        });
 }
 
 function set_strings_by_table(table) {
@@ -94,7 +99,7 @@ function set_strings_by_table(table) {
         var s = table[strings[i].getAttribute("data-original-string")];
         if (s === undefined) continue;
 
-        strings[i].textContent = s == "**" ? strings[i].getAttribute("data-original-string") : s;
+        strings[i].textContent = s;
     }
 }
 
@@ -155,7 +160,108 @@ function tlinject_enable() {
     tlinject_activate()
 }
 
+function tlinject_text_alert(text, done) {
+    var finish = function() {
+        if (done) {
+            done();
+        }
+        exitModal();
+    }
+
+    enterModal(function(win) {
+        var textbox = document.createElement("p");
+        textbox.style.marginTop = 0;
+        textbox.textContent = text;
+        win.appendChild(textbox);
+
+        var bg = document.createElement("div");
+        bg.className = "button_group";
+        win.appendChild(bg);
+
+        var close = document.createElement("button");
+        close.className = "button";
+        close.textContent = "Dismiss";
+        close.addEventListener("click", finish, false);
+        bg.appendChild(close);
+    }, done);
+}
+
+function tlinject_prompt(forKey, done) {
+    var cancel = function(event) {
+        event.preventDefault();
+        exitModal();
+    }
+
+    var submit = function(txt) {
+        if (txt || txt === null) {
+            done(txt);
+        }
+        exitModal();
+    }
+
+    enterModal(function(win) {
+        var beforeText = document.createTextNode("");
+        var afterText = document.createTextNode("的翻译是什么？");
+        var key = document.createElement("strong");
+        key.textContent = '"' + forKey + '"';
+
+        var explain = document.createElement("p");
+        explain.style.marginTop = 0;
+        explain.appendChild(beforeText);
+        explain.appendChild(key);
+        explain.appendChild(afterText);
+        win.appendChild(explain);
+
+        var form = document.createElement("form");
+        win.appendChild(form);
+
+        var field = document.createElement("input");
+        field.className = "text_field";
+        field.type = "text";
+        field.placeholder = forKey;
+        form.appendChild(field);
+
+        var explainText = document.createElement("small");
+        explainText.textContent = PROMPT_EXTRA_TEXT;
+        form.appendChild(explainText);
+
+        var bg = document.createElement("div");
+        bg.className = "button_group";
+        form.appendChild(bg);
+
+        var subm = document.createElement("input");
+        subm.type = "submit";
+        subm.className = "button primary";
+        subm.value = "提交";
+
+        var canc = document.createElement("button");
+        canc.className = "button";
+        canc.textContent = "取消";
+        canc.addEventListener("click", cancel, false);
+
+        var remo = document.createElement("button");
+        remo.className = "button destructive";
+        remo.textContent = "移除翻译";
+        remo.addEventListener("click", function(e) { e.preventDefault(); submit(null) }, false);
+
+        var spac = document.createElement("div");
+        spac.className = "spacer";
+
+        bg.appendChild(subm);
+        bg.appendChild(canc);
+        bg.appendChild(spac);
+        bg.appendChild(remo);
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault(); submit(field.value)
+        }, false);
+
+        requestAnimationFrame(function() {
+            field.focus()
+        });
+    });
+}
+
 function tlinject_about() {
-    var banner = "此站使用众包翻译。如果有句子在你悬停在上面时高亮显示，你可以点击并提交翻译。";
-    alert(banner);
+    tlinject_text_alert("此站使用众包翻译。如果有句子在你悬停在上面时高亮显示，你可以点击并提交翻译。");
 }

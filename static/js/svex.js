@@ -62,8 +62,10 @@ function construct_crap_tree(ent) {
   var a = root.querySelector("#template_flist");
   a.setAttribute("id", "template_flist" + ent.id);
 
-  root.querySelector("#template_buttons").innerHTML = (
-    '<a class="image_switch" href="javascript:;" onclick="svx_download_img(%s)">下载当前搭配表情图</a>').replace(/\%s/g, ent.id);
+  var buttonbar = root.querySelector("#template_buttons")
+  buttonbar.style.display = "flex";
+  buttonbar.innerHTML = (
+    '<a class="image_switch" href="javascript:;" onclick="svx_download_img(%s)">下载当前合并图</a>').replace(/\%s/g, ent.id);
 
   return root.children[0];
 }

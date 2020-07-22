@@ -26,25 +26,27 @@ rarity = filter_t("稀有度", (
 lambda card: enums.floor_rarity(card.rarity) + "_kc")
 
 skill_type = filter_t("特技类型", (
-    option_t("强判",       "s_pl"),
-    option_t("不断连",     "s_cprot"),
-    option_t("C分",        "s_combobonus"),
-    option_t("P分",        "s_scorebonus s_psbvarianta s_psbvariantb s_psbvariantc"),
-    option_t("奶妈",       "s_heal"),
-    option_t("血盾",       "s_life"),
-    option_t("过载",       "s_overload"),
-    option_t("全才",       "s_allround"),
-    option_t("专注",       "s_perfelegant"),
-    option_t("技能增强",   "s_sb")),
+    option_t("PERFECT锁定",  "plock"),
+    option_t("C保护",     "cguard"),
+    option_t("C分",  "cboost"),
+    option_t("P分",  "scoreup psb_hold psb_flick psb_slide"),
+    option_t("补血",       "heal"),
+    option_t("血盾",     "hguard"),
+    option_t("过载",     "overload"),
+    option_t("全才",    "allround"),
+    option_t("专注",      "concentrate"),
+    option_t("技能增强",  "skillboost")),
 lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
 
 skill_type_row_2 = filter_t("特技类型", (
-    option_t("集中/协调",  "s_focus"),
-    option_t("生命闪耀",   "s_cbonus_based_life"),
-    option_t("返场",       "s_mimic"),
-    option_t("三色协同",   "s_synergy"),
-    option_t("调音",       "s_tuning"),
-    option_t("片断",        "s_motif")),
+    option_t("集中/协调", "focus focus_flat"),
+    option_t("生命闪耀",   "sparkle"),
+    option_t("返场",       "encore"),
+    option_t("三色协同",   "synergy"),
+    option_t("调音",       "tuning"),
+    option_t("片断",        "motif"),
+    option_t("和音(交响)",       "symphony"),
+    option_t("轮替",    "alternate")),
 lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
 
 high_stat = filter_t("偏高数值", (
@@ -113,7 +115,7 @@ class SkillType(Datum):
     def make_values(self, a_card):
         if a_card.skill:
             return (
-                """<td> <div class="icon {0}"></div> </td>"""
+                """<td> <div class="sicon {0}"></div> </td>"""
             ).format(E(enums.skill_class(a_card.skill.skill_type)))
         else:
             return """<td></td>"""
@@ -207,7 +209,7 @@ class HighStat(Datum):
 
     def make_values(self, a_card):
         return (
-            """<td> <div class="icon {0}"></div> </td>"""
+            """<td> <div class="sicon {0}"></div> </td>"""
         ).format(E(enums.stat_dot(a_card.best_stat)))
 
 class AppealsHigh(Datum):

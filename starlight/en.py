@@ -81,10 +81,19 @@ SKILL_DESCRIPTIONS = {
     36: """使所有PERFECT音符获得<a href="/motif_internal/{0}?appeal=dance">基于队伍Dance表现值的分数加成</a>""",
     37: """使所有PERFECT音符获得<a href="/motif_internal/{0}?appeal=visual">基于队伍Visual表现值的分数加成</a>""",
     38: """全3种属性偶像存在于队伍时，增强当前发动分数提高、COMBO加成、生命恢复技能的效果""",
+    39: """使COMBO加成减少 <span class="let">{0}</span>%，但同时获得加成 <span class="let">{2}</span>% 的[至今为止获得过最高的分数加成]""",
 }
 
-SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31]
+SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 39]
 SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL2 = [21, 22, 23, 26, 27, 28, 29, 30]
+
+# Whether the skill's description uses the value in a negative context
+# (e.g. ...reduces by x%...)
+SKILL_TYPES_WITH_NEGATIVE_EFF_VAL1 = [39]
+SKILL_TYPES_WITH_NEGATIVE_EFF_VAL2 = []
+
+SKILL_TYPES_WITH_THOUSANDTHS_EFF_VAL1 = [20]
+SKILL_TYPES_WITH_THOUSANDTHS_EFF_VAL2 = [39]
 
 REMOVE_HTML = re.compile(r"</?(span|a)[^>]*>")
 
@@ -103,12 +112,21 @@ def describe_skill_html(skill):
     # TODO symbols
     if skill.skill_type in SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1:
         effect_val -= 100
-    elif skill.skill_type in [20]:
-        effect_val = (effect_val//10) - 100
+    elif skill.skill_type in SKILL_TYPES_WITH_THOUSANDTHS_EFF_VAL1:
+        effect_val = (effect_val // 10) - 100
+
+    if skill.skill_type in SKILL_TYPES_WITH_NEGATIVE_EFF_VAL1:
+        effect_val = -effect_val
 
     value_2 = skill.value_2
     if skill.skill_type in SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL2:
         value_2 -= 100
+    elif skill.skill_type in SKILL_TYPES_WITH_THOUSANDTHS_EFF_VAL2:
+        value_2 = (value_2 // 10) - 100
+
+    if skill.skill_type in SKILL_TYPES_WITH_NEGATIVE_EFF_VAL2:
+        value_2 = -value_2
+
     value_3 = skill.value_3
 
     effect_clause = SKILL_DESCRIPTIONS.get(
@@ -228,7 +246,7 @@ def describe_lead_skill_html(skill):
         return """此队长技能的内部描述格式未定义，请汇报此BUG。(up_type: {0}, type: {1})""".format(
             skill.up_type, skill.type
         )
-    
+
     predicate_clause = build_lead_skill_predicate(skill)
     if predicate_clause:
         built = " ".join((predicate_clause, effect_clause))
