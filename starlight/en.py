@@ -22,20 +22,20 @@ def availability_date_range(a, now):
     if a.start.year == a.end.year:
         return "{0}{1} ~ {2}".format(
             a.start.strftime("%Y年"),
-            a.start.strftime("%b%d日"),
-            a.end.strftime("%b%d日") if a.end < now else "至今",
+            a.start.strftime("%m月%d日"),
+            a.end.strftime("%m月%d日") if a.end < now else "至今",
         )
     else:
         return "{0} ~ {1}".format(
-            a.start.strftime("%Y年%b%d日"),
-            a.end.strftime("%Y年%b%d日") if a.end < now else "至今",
+            a.start.strftime("%Y年%m月%d日"),
+            a.end.strftime("%Y年%m月%d日") if a.end < now else "至今",
         )
 
 def gap_date_range(a):
     delta = (a.end - a.start)
     return "{0} ~ {1} (共 {2} 日)".format(
-        a.start.strftime("%b%d日"),
-        a.end.strftime("%b%d日"),
+        a.start.strftime("%m月%d日"),
+        a.end.strftime("%m月%d日"),
         round(delta.days + (delta.seconds / 86400))
     )
 
@@ -70,9 +70,9 @@ SKILL_DESCRIPTIONS = {
     25: """获得额外的<a href="/sparkle_internal/{0}">基于你当前生命值的COMBO加成</a>""",
     26: """当Cute、Cool和Passion偶像存在于队伍时，使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成/恢复你 <span class="let">{3}</span> 点生命，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
     27: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，并获得额外的 <span class="let">{2}</span>% 的COMBO加成""",
-    28: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，及长按音符获得 <span class="let">{2}</span>% 的分数加成""",
-    29: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，及滑块音符获得 <span class="let">{2}</span>% 的分数加成""",
-    30: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，及滑动音符获得 <span class="let">{2}</span>% 的分数加成""",
+    28: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，长按音符获得 <span class="let">{2}</span>% 的分数加成""",
+    29: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，滑块音符获得 <span class="let">{2}</span>% 的分数加成""",
+    30: """使所有PERFECT音符获得 <span class="let">{0}</span>% 的分数加成，滑动音符获得 <span class="let">{2}</span>% 的分数加成""",
     31: """获得额外的 <span class="let">{0}</span>% 的COMBO加成，并使所有GREAT/NICE音符改判为PERFECT""",
     32: """增强Cute偶像的分数/COMBO加成技能的效果""",
     33: """增强Cool偶像的分数/COMBO加成技能的效果""",
@@ -80,8 +80,10 @@ SKILL_DESCRIPTIONS = {
     35: """使所有PERFECT音符获得<a href="/motif_internal/{0}?appeal=vocal">基于队伍Vocal表现值的分数加成</a>""",
     36: """使所有PERFECT音符获得<a href="/motif_internal/{0}?appeal=dance">基于队伍Dance表现值的分数加成</a>""",
     37: """使所有PERFECT音符获得<a href="/motif_internal/{0}?appeal=visual">基于队伍Visual表现值的分数加成</a>""",
-    38: """全3种属性偶像存在于队伍时，增强当前发动分数提高、COMBO加成、生命恢复技能的效果""",
-    39: """使COMBO加成减少 <span class="let">{0}</span>%，但同时获得加成 <span class="let">{2}</span>% 的[至今为止获得过最高的分数加成]""",
+    38: """全3种属性偶像存在于队伍时，增强当前发动分数加成、COMBO加成、生命恢复技能的效果""",
+    39: """使COMBO加成减少 <span class="let">{0}</span>%，但同时获得增强 <span class="let">{2}</span>% 的【LIVE中发动过的最高的分数加成效果】""",
+    40: """获得【LIVE中发动过的最高的分数加成/COMBO加成效果】""",
+    41: """发动队伍内所有偶像的特技效果（类型重复取最高值）"""
 }
 
 SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 39]
@@ -160,6 +162,9 @@ LEADER_SKILL_PARAM = {
     4: "所有表现值",
     5: "生命",
     6: "特技发动几率",
+    # FIXME: only grammatically works when used in world level desc
+    # FIXME: find variants for other stats
+    13: "自身的Dance表现值"
 }
 
 def build_lead_skill_predicate(skill):
@@ -208,7 +213,11 @@ def describe_lead_skill_html(skill):
         effect_clause = """提升{1}偶像的{0} <span class="let">{2}</span>%""".format(
             target_param, target_attr, skill.up_value)
     elif skill.up_type == 1 and skill.type == 30:
-        effect_clause = "完成LIVE时，额外获得特别奖励"
+        if skill.up_value == 12:
+            # Riina
+            effect_clause = "完成LIVE时，有几率掉落星光碎片（スター​ピース）。掉落率随星阶等级（スターランク）提升"
+        else:
+            effect_clause = "完成LIVE时，有几率获得额外奖励。掉落率随星阶等级（スターランク）提升"
     elif skill.up_type == 1 and skill.type == 40:
         effect_clause = "完成LIVE时，使获得粉丝数提高 <span class=\"let\">{0}</span>%".format(
             skill.up_value)
@@ -242,6 +251,14 @@ def describe_lead_skill_html(skill):
     elif skill.type == 80:
         effect_clause = """完成LIVE时，使获得的经验值/金钱/友情pt提高  <span class="let">{0}</span>%（Guest有效）""".format(
             skill.up_value)
+    elif skill.type == 90:
+        target_param = LEADER_SKILL_PARAM.get(skill.target_param, "<unknown>")
+        target_attr_2 = LEADER_SKILL_TARGET.get(skill.target_attribute_2, "<unknown>")
+        target_param_2 = LEADER_SKILL_PARAM.get(skill.target_param_2, "<unknown>")
+        effect_clause = """提高此卡{0} <span class="let">{1}</span>%。当面具打开时提高{3}成员的{2} <span class="let">{4}</span>%（需装备此卡服装，此卡为Guest时无效）""".format(
+            target_param, skill.up_value, target_param_2, target_attr_2, skill.up_value_2)
+    elif skill.type == 100:
+        effect_clause = """发动包含Guest在内的队伍内所有偶像的领队技能（类型重复取最高值）"""
     else:
         return """此队长技能的内部描述格式未定义，请汇报此BUG。(up_type: {0}, type: {1})""".format(
             skill.up_type, skill.type
@@ -249,7 +266,7 @@ def describe_lead_skill_html(skill):
 
     predicate_clause = build_lead_skill_predicate(skill)
     if predicate_clause:
-        built = " ".join((predicate_clause, effect_clause))
+        built = "".join((predicate_clause, effect_clause))
     else:
         built = effect_clause
     return built + "。"

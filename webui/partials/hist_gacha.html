@@ -11,7 +11,7 @@
       {% end %}
       {% set rate = rates_src.get(history_entry.referred_id()) %}
       {% if rate and rate != gacha_rates_t._REGULAR_RATES %}
-      <small>rates: R {{ rate.r }}% / SR {{ rate.sr }}% / SSR {{ rate.ssr }}%</small>
+      <small>排出率: R {{ rate.r }}% / SR {{ rate.sr }}% / SSR {{ rate.ssr }}%</small>
       {% end %}
     </span>
   </div>

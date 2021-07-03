@@ -2,7 +2,7 @@ TL_ENABLED_TEXT = "<a href='javascript:;' onclick='tlinject_revert()'>禁用翻�
                   "(<a href='javascript:;' onclick='tlinject_about()'>啥玩意？</a>)"
 TL_DISABLED_TEXT = "<a href='javascript:;' onclick='tlinject_enable()'>启用翻译</a> " +
                    "(<a href='javascript:;' onclick='tlinject_about()'>啥东西？</a>)"
-PROMPT_EXTRA_TEXT = "晦涩地说：这些你提交的字串可能会被作为公共数据导出的一部分而被公开。\n" +
+PROMPT_EXTRA_TEXT = "不说人话：这些你提交的字串可能会被作为公共数据导出的一部分而被公开。\n" +
                     "这些数据导出【并不会】包含任何能够识别你的信息。\n" +
                     "（如果你是手滑或者不同意，请点取消。）"
 TL_ENABLE_PREF_KEY = "sl$tlEnable"
@@ -81,10 +81,19 @@ function submit_tl_string(node, text) {
                         var table = {}
                         table[text] = submitText? submitText : text;
                         set_strings_by_table(table);
+                        exitModal();
                     } else {
-                        var j = JSON.parse(xhr.responseText);
+                        var j;
+                        try {
+                            j = JSON.parse(xhr.responseText);
+                        } catch {
+                            j = {}
+                        }
+
                         if (j.error) {
                             tlinject_text_alert('Failed to submit translation. The server said: "' + j.error + '"');
+                        } else {
+                            tlinject_text_alert('Failed to submit translation. The server did not return an error message.');
                         }
                     }
                 }
@@ -180,7 +189,7 @@ function tlinject_text_alert(text, done) {
 
         var close = document.createElement("button");
         close.className = "button";
-        close.textContent = "Dismiss";
+        close.textContent = "关闭";
         close.addEventListener("click", finish, false);
         bg.appendChild(close);
     }, done);
@@ -196,7 +205,6 @@ function tlinject_prompt(forKey, done) {
         if (txt || txt === null) {
             done(txt);
         }
-        exitModal();
     }
 
     enterModal(function(win) {
@@ -253,7 +261,9 @@ function tlinject_prompt(forKey, done) {
         bg.appendChild(remo);
 
         form.addEventListener("submit", function(event) {
-            event.preventDefault(); submit(field.value)
+            event.preventDefault();
+            submit(field.value);
+            subm.disabled = true;
         }, false);
 
         requestAnimationFrame(function() {

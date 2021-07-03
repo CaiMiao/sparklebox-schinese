@@ -10,6 +10,7 @@ import pytz
 import itertools
 import enums
 import table
+import hashlib
 from models import extra
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -244,7 +245,21 @@ class ShortlinkTable(HandlerSyncedWithMaster):
 
 @route(r"/skill_table")
 class SkillTable(ShortlinkTable):
+    def compute_etag(self):
+        hasher = hashlib.sha1(b"SkillTable version ")
+        hasher.update(self.settings["instance_random"])
+        hasher.update(str(starlight.data.version).encode("utf8"))
+        hasher.update("; plus={0}".format(
+            "yes" if self.get_argument("plus", "NO") == "YES" else "no").encode("utf8"))
+        return "\"{0}\"".format(hasher.hexdigest())
+
     def get(self):
+        self.set_etag_header()
+        if self.check_etag_header():
+            self.set_status(304)
+            return
+
+        self.set_header("Cache-Control", "must-revalidate")
         ds = filter(lambda C: C.skill is not None, starlight.data.cards(starlight.data.all_chain_ids()))
         self.rendertable("CASDE", ds,
             allow_shortlink=0,
@@ -253,7 +268,21 @@ class SkillTable(ShortlinkTable):
 
 @route(r"/lead_skill_table")
 class LeadSkillTable(ShortlinkTable):
+    def compute_etag(self):
+        hasher = hashlib.sha1(b"LeadSkillTable version ")
+        hasher.update(self.settings["instance_random"])
+        hasher.update(str(starlight.data.version).encode("utf8"))
+        hasher.update("; plus={0}".format(
+            "yes" if self.get_argument("plus", "NO") == "YES" else "no").encode("utf8"))
+        return "\"{0}\"".format(hasher.hexdigest())
+
     def get(self):
+        self.set_etag_header()
+        if self.check_etag_header():
+            self.set_status(304)
+            return
+
+        self.set_header("Cache-Control", "must-revalidate")
         ds = filter(lambda C: C.lead_skill is not None, starlight.data.cards(starlight.data.all_chain_ids()))
         self.rendertable("CAKL", ds,
             allow_shortlink=0,
@@ -283,6 +312,9 @@ class CompareCard(ShortlinkTable):
 
 @route(r"/gacha(?:/([0-9]+))?")
 class GachaTable(ShortlinkTable):
+    def awakened_id(self, cid):
+        return starlight.data.chain(cid)[-1]
+
     async def get(self, maybe_gachaid):
         now = pytz.utc.localize(datetime.utcnow())
 
@@ -317,14 +349,18 @@ class GachaTable(ShortlinkTable):
             self.write("Gacha rates are only available for current gachas. Sorry about that.")
             self.finish()
             return 
-            
+        
+        want_awakened = self.get_argument("plus", "NO") == "YES"
         live_info = await starlight.data.live_gacha_rates(selected_gacha.id)
 
         availability_list = starlight.data.available_cards(selected_gacha)
         availability_list.sort(key=lambda x: x.sort_order)
 
         want_id_list = [gr.card_id for gr in availability_list]
-        limited_flags = {gr.card_id: gr.is_limited for gr in availability_list}
+        if want_awakened:
+            limited_flags = {self.awakened_id(gr.card_id): gr.is_limited for gr in availability_list}
+        else:
+            limited_flags = {gr.card_id: gr.is_limited for gr in availability_list}
 
         if live_info:
             want_id_list.extend(cid for cid in live_info["indiv"] if cid not in limited_flags)
@@ -341,7 +377,12 @@ class GachaTable(ShortlinkTable):
         categories.insert(0, lim_cat)
 
         if live_info:
-            odds_cat = table.CustomNumber(live_info["indiv"], header_text="几率", format="{0:.3f}%")
+            if want_awakened:
+                indiv_rates = {self.awakened_id(k): v for k, v in live_info["indiv"].items()}
+            else:
+                indiv_rates = live_info["indiv"]
+
+            odds_cat = table.CustomNumber(indiv_rates, header_text="几率", format="{0:.3f}%")
             categories.insert(1, odds_cat)
 
             live_rates = live_info["rates"]
@@ -441,18 +482,20 @@ class SpriteViewerEX(tornado.web.RequestHandler):
             self.set_status(404)
             self.write("Not found.")
 
-@route("/history")
+@route(r"/history")
+@route(r"/history/([0-9]+)")
 class History(HandlerSyncedWithMaster):
     """ Display all history entries. """
-    def get(self):
-        all_history = self.settings["tle"].get_history(nent=None)
+    def get(self, page=None):
+        page = max(int(page or 1), 1)
+        all_history = self.settings["tle"].get_history(nent=50, page=page - 1)
 
         preprime_set = set()
         for h in all_history:
             preprime_set.update(h.card_list())
         starlight.data.cards(preprime_set)
 
-        self.render("history.html", history=all_history, **self.settings)
+        self.render("history.html", history=all_history, page=page, **self.settings)
         self.settings["analytics"].analyze_request(self.request, self.__class__.__name__)
 
 @route(r"/tl_cacheall")

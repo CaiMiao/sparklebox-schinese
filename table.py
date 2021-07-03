@@ -39,14 +39,16 @@ skill_type = filter_t("特技类型", (
 lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
 
 skill_type_row_2 = filter_t("特技类型", (
-    option_t("集中/协调", "focus focus_flat"),
-    option_t("生命闪耀",   "sparkle"),
-    option_t("返场",       "encore"),
-    option_t("三色协同",   "synergy"),
-    option_t("调音",       "tuning"),
-    option_t("片断",        "motif"),
-    option_t("和音(交响)",       "symphony"),
-    option_t("轮替",    "alternate")),
+    option_t("集中/协调",    "focus focus_flat"),
+    option_t("生命闪耀",     "sparkle"),
+    option_t("返场",         "encore"),
+    option_t("三色协同",     "synergy"),
+    option_t("调音",         "tuning"),
+    option_t("片断",         "motif"),
+    option_t("和音(交响)",   "symphony"),
+    option_t("轮替",         "alternate"),
+    option_t("副歌(Refr.)",         "refrain"),
+    option_t("魔法",         "magic")),
 lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
 
 high_stat = filter_t("偏高数值", (

@@ -74,6 +74,9 @@ footer {
   &.tight {
     font-size: 0;
   }
+  &.negative_box {
+    padding: 0 8px;
+  }
 }
 
 // Card icons
@@ -111,7 +114,7 @@ span.var {
   bottom          : 0;
   left            : 0;
   background-color: fade(@main_bg, 70%);
-  z-index         : 9001;
+  z-index         : 999;
 
   a {
     color: @main_text;
@@ -144,4 +147,17 @@ strong.ga_available {
 .help {
   border-bottom: 1px dashed;
   cursor       : help;
+}
+
+.page_box {
+  display: flex;
+  flex-direction: row;
+}
+
+.flexible_space {
+  flex-grow: 2;
+}
+
+.align_right {
+  text-align: right;
 }
