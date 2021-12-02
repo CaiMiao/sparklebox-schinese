@@ -48,7 +48,8 @@ skill_type_row_2 = filter_t("特技类型", (
     option_t("和音(交响)",   "symphony"),
     option_t("轮替",         "alternate"),
     option_t("副歌(Refr.)",         "refrain"),
-    option_t("魔法",         "magic")),
+    option_t("魔法",         "magic"),
+    option_t("呼应(Mut.)",   "mutual")),
 lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
 
 high_stat = filter_t("偏高数值", (

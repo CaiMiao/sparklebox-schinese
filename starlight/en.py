@@ -83,19 +83,20 @@ SKILL_DESCRIPTIONS = {
     38: """全3种属性偶像存在于队伍时，增强当前发动分数加成、COMBO加成、生命恢复技能的效果""",
     39: """使COMBO加成减少 <span class="let">{0}</span>%，但同时获得增强 <span class="let">{2}</span>% 的【LIVE中发动过的最高的分数加成效果】""",
     40: """获得【LIVE中发动过的最高的分数加成/COMBO加成效果】""",
-    41: """发动队伍内所有偶像的特技效果（类型重复取最高值）"""
+    41: """发动队伍内所有偶像的特技效果（类型重复取最高值）""",
+    42: """使获得的分数减少<span class="let">{0}</span>%，但同时获得增强 <span class="let">{2}</span>% 的【LIVE中发动过的最高的COMBO加成效果】""",
 }
 
-SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 39]
+SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL1 = [1, 2, 3, 4, 14, 15, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 39, 42]
 SKILL_TYPES_WITH_PERCENTAGE_EFF_VAL2 = [21, 22, 23, 26, 27, 28, 29, 30]
 
 # Whether the skill's description uses the value in a negative context
 # (e.g. ...reduces by x%...)
-SKILL_TYPES_WITH_NEGATIVE_EFF_VAL1 = [39]
+SKILL_TYPES_WITH_NEGATIVE_EFF_VAL1 = [39, 42]
 SKILL_TYPES_WITH_NEGATIVE_EFF_VAL2 = []
 
 SKILL_TYPES_WITH_THOUSANDTHS_EFF_VAL1 = [20]
-SKILL_TYPES_WITH_THOUSANDTHS_EFF_VAL2 = [39]
+SKILL_TYPES_WITH_THOUSANDTHS_EFF_VAL2 = [39, 42]
 
 REMOVE_HTML = re.compile(r"</?(span|a)[^>]*>")
 
@@ -259,6 +260,12 @@ def describe_lead_skill_html(skill):
             target_param, skill.up_value, target_param_2, target_attr_2, skill.up_value_2)
     elif skill.type == 100:
         effect_clause = """发动包含Guest在内的队伍内所有偶像的领队技能（类型重复取最高值）"""
+    elif skill.type == 110:
+        song_attr = LEADER_SKILL_TARGET.get(skill.target_attribute_2 + 10, "<unknown>")
+        target_param = LEADER_SKILL_PARAM.get(skill.target_param, "<unknown>")
+        target_param_2 = LEADER_SKILL_PARAM.get(skill.target_param_2, "<unknown>")
+        effect_clause = """提高所有卡牌的 {0} <span class="let">{1}</span>% 以及所有卡牌的 {2} <span class="let">{3}</span>% (当进行 {4} 类型的LIVE时)""".format(
+            target_param, skill.up_value, target_param_2, skill.up_value_2, song_attr)
     else:
         return """此队长技能的内部描述格式未定义，请汇报此BUG。(up_type: {0}, type: {1})""".format(
             skill.up_type, skill.type

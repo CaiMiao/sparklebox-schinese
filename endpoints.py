@@ -11,14 +11,30 @@ import itertools
 import enums
 import table
 import hashlib
+import traceback
 from models import extra
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 import webutil
 
+class ErrorUtilsMixin(tornado.web.RequestHandler):
+    def write_error(self, status_code, **kwargs):
+        self.set_status(status_code)
+
+        tb = None
+        if self.settings.get("serve_traceback") and "exc_info" in kwargs:
+            tb = "".join(traceback.format_exception(*kwargs["exc_info"]))
+
+        self.render("error.html", 
+            code=status_code,
+            message=kwargs.get("app_reason") or self._reason,
+            traceback=tb,
+            **self.settings)
+        self.finish()
+
 @route(r"/([0-9]+-[0-9]+-[0-9]+)?")
-class Home(HandlerSyncedWithMaster):
+class Home(HandlerSyncedWithMaster, ErrorUtilsMixin):
     async def head(self, pretend_date):
         return self.get(pretend_date)
 
@@ -109,7 +125,7 @@ class EventD(HandlerSyncedWithMaster):
             self.write("None")
 
 @route(r"/char/([0-9]+)(/table)?")
-class Character(HandlerSyncedWithMaster):
+class Character(HandlerSyncedWithMaster, ErrorUtilsMixin):
     def get(self, chara_id, use_table):
         chara_id = int(chara_id)
         achar = starlight.data.chara(chara_id)
@@ -149,12 +165,11 @@ class Character(HandlerSyncedWithMaster):
             self.settings["analytics"].analyze_request(
                 self.request, self.__class__.__name__, {"chara": achar.conventional})
         else:
-            self.set_status(404)
-            self.write("Not found.")
+            return self.send_error(404, app_reason="No such character.")
 
 
 @route(r"/card/([0-9\,]+)(/table)?")
-class Card(HandlerSyncedWithMaster):
+class Card(HandlerSyncedWithMaster, ErrorUtilsMixin):
     def get(self, card_idlist, use_table):
         card_ids = [int(x) for x in card_idlist.strip(",").split(",")]
 
@@ -192,8 +207,7 @@ class Card(HandlerSyncedWithMaster):
             self.settings["analytics"].analyze_request(
                 self.request, self.__class__.__name__, {"card_id": card_idlist})
         else:
-            self.set_status(404)
-            self.write("Not found.")
+            return self.send_error(404, app_reason="No such card.")
 
 # all the table handlers go here
 
@@ -202,7 +216,7 @@ class Card(HandlerSyncedWithMaster):
 # it apply globally to all tables.
 
 @route(r"/t/([A-Za-z]+)/([^/]+)")
-class ShortlinkTable(HandlerSyncedWithMaster):
+class ShortlinkTable(HandlerSyncedWithMaster, ErrorUtilsMixin):
     # This shouldn't take too long.
     # The full chain is pre-emptively loaded when any member is requested
     def flip_chain(self, card):
@@ -236,11 +250,13 @@ class ShortlinkTable(HandlerSyncedWithMaster):
         try:
             idlist = webutil.decode_cardlist(spec)
         except ValueError:
-            self.set_status(400)
-            self.write("The card list could not be parsed")
-            return
+            return self.send_error(400, app_reason="The card list could not be parsed.")
 
-        self.rendertable(dataset.upper(), starlight.data.cards(idlist))
+        card_list = [*filter(bool, starlight.data.cards(idlist))]
+        if not card_list:
+            return self.send_error(404, app_reason="Not found.")
+
+        self.rendertable(dataset.upper(), card_list)
         self.settings["analytics"].analyze_request(self.request, self.__class__.__name__)
 
 @route(r"/skill_table")
@@ -297,7 +313,7 @@ class CompareCard(ShortlinkTable):
         chains = [starlight.data.chain(id) for id in card_ids]
         unique = []
         for c in chains:
-            if c[0] not in unique:
+            if c is not None and c[0] not in unique:
                 unique.append(c[0])
 
         acard = starlight.data.cards(unique)
@@ -307,8 +323,7 @@ class CompareCard(ShortlinkTable):
             self.settings["analytics"].analyze_request(
                 self.request, self.__class__.__name__, {"card_id": card_idlist})
         else:
-            self.set_status(404)
-            self.write("Not found.")
+            return self.send_error(404, app_reason="No cards in the given list were found.")
 
 @route(r"/gacha(?:/([0-9]+))?")
 class GachaTable(ShortlinkTable):
@@ -337,18 +352,12 @@ class GachaTable(ShortlinkTable):
                 selected_gacha = None
 
         if selected_gacha is None:
-            self.set_status(404)
-            self.write("Not found. If there's no gacha happening right now, you'll have to specify an ID.")
-            self.finish()
-            return
+            return self.send_error(404, app_reason="Not found. If there's no gacha happening right now, you'll have to specify an ID.")
 
         is_current = (now >= selected_gacha.start_date) and (now <= selected_gacha.end_date)
 
         if not is_current:
-            self.set_status(404)
-            self.write("Gacha rates are only available for current gachas. Sorry about that.")
-            self.finish()
-            return 
+            return self.send_error(404, app_reason="Gacha rates are only available for current gachas. Sorry about that.")
         
         want_awakened = self.get_argument("plus", "NO") == "YES"
         live_info = await starlight.data.live_gacha_rates(selected_gacha.id)
@@ -397,7 +406,7 @@ class GachaTable(ShortlinkTable):
             gacha=selected_gacha,
             rates=live_rates)
 
-class MiniTable(ShortlinkTable):
+class MiniTable(ShortlinkTable, ErrorUtilsMixin):
     def rendertable(self, dataset, cards, table_name="Custom Table",
                     template="minitable.html", **extra):
         extra.update(self.settings)
@@ -415,9 +424,7 @@ class MotifInternalTable(MiniTable):
         try:
             dataset = starlight.data.fetch_motif_data(t)
         except ValueError:
-            self.set_status(404)
-            self.write("This table doesn't currently exist.")
-            return
+            return self.send_error(404, app_reason="This table doesn't currently exist.")
 
         css_class = self.get_argument("appeal", "vocal")
         if css_class not in {"vocal", "visual", "dance"}:
@@ -437,9 +444,7 @@ class SparkleInternalTable(MiniTable):
         try:
             dataset = starlight.data.fetch_sparkle_data(t)
         except ValueError:
-            self.set_status(404)
-            self.write("This table doesn't currently exist.")
-            return
+            return self.send_error(404, app_reason="This table doesn't currently exist.")
 
         motif_cats = [table.IndexedCustomNumber(0, "Life value", dclass="life"),
             table.IndexedCustomNumber(1, "Combo bonus", format="+{0}%"),
@@ -465,7 +470,7 @@ class SpriteRedirect(tornado.web.RequestHandler):
 
 
 @route(r"/sprite_go_ex/([0-9]+)")
-class SpriteViewerEX(tornado.web.RequestHandler):
+class SpriteViewerEX(ErrorUtilsMixin):
     def get(self, chara_id):
         # hack for footer text compat
         self.did_trigger_update = False
@@ -478,13 +483,13 @@ class SpriteViewerEX(tornado.web.RequestHandler):
                 known_poses=svxdata,
                 chara=achar,
                 **self.settings)
-        else:
-            self.set_status(404)
-            self.write("Not found.")
+
+        return self.send_error(404, app_reason="Not found.")
+
 
 @route(r"/history")
 @route(r"/history/([0-9]+)")
-class History(HandlerSyncedWithMaster):
+class History(HandlerSyncedWithMaster, ErrorUtilsMixin):
     """ Display all history entries. """
     def get(self, page=None):
         page = max(int(page or 1), 1)
