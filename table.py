@@ -47,9 +47,16 @@ skill_type_row_2 = filter_t("特技类型", (
     option_t("片断",         "motif"),
     option_t("和音(交响)",   "symphony"),
     option_t("轮替",         "alternate"),
-    option_t("副歌(Refr.)",         "refrain"),
-    option_t("魔法",         "magic"),
-    option_t("呼应(Mut.)",   "mutual")),
+    option_t("副歌(Refr.)",  "refrain"),
+    option_t("魔法",         "magic")),
+lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
+
+skill_type_row_3 = filter_t("特技类型", (
+    option_t("呼应(Mut.)",   "mutual"),
+    option_t("Overdrive",    "overdrive"),
+    option_t("T. Spike",     "spike"),
+    option_t("Dominant",     "dominant"),
+    option_t("礼物",         "present")),
 lambda card: enums.skill_class(card.skill.skill_type) if card.skill else None)
 
 high_stat = filter_t("偏高数值", (
@@ -107,7 +114,7 @@ class CardProfile(Datum):
         )
 
 class SkillType(Datum):
-    applicable_filters = [skill_type, skill_type_row_2]
+    applicable_filters = [skill_type, skill_type_row_2, skill_type_row_3]
     uid = "S"
 
     def make_headers(self):

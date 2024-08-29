@@ -1,36 +1,39 @@
 <div class="rel chara_header">
-    <div class="name_slab">
-        {% for kanji, furi in zip( *map(str.split, (chara.kanji_spaced, chara.kana_spaced)) ) %}
-        <ruby>
-            <rb>{{ kanji }}</rb> <rp>(</rp><rt>{{ furi }}</rt><rp>)</rp>
-        </ruby>
-        {% end %}
+  <div class="name_slab">
+      {% for kanji, furi in zip( *map(str.split, (chara.kanji_spaced, chara.kana_spaced)) ) %}
+      <ruby>
+          <rb>{{ kanji }}</rb> <rp>(</rp><rt>{{ furi }}</rt><rp>)</rp>
+      </ruby>
+      {% end %}
 
-        (<span class="english">{{ chara.conventional }}</span>)
-    </div>
+      (<span class="english">{{ chara.conventional }}</span>)
+  </div>
 </div>
 {% if not use_table %}
 <div class="va unbordered box black" style="width:100%">
   <div class="content">
     <div class="table_stub" style="padding-top:10px">
       <a class="image_switch" href="http://cgdex.project-imas.com/?v=idols&o=Name%20LIKE%20%22{{ chara.conventional }}%22">CGdex</a>
-      <a class="image_switch" href="http://www.project-imas.com/wiki/{{ starlight.en.westernized_name(chara).replace(" ", "_") }}">Project iM@S Wiki</a>
-      <a class="image_switch" href="https://zh.moegirl.org/index.php?search={{ chara.name }}" title="暂用搜索方式">萌娘百科</a>
+      <a class="image_switch" href="http://www.project-imas.wiki/{{ starlight.en.westernized_name(chara).replace(" ", "_") }}">Project iM@S Wiki</a>
+      <a class="image_switch" href="https://searchwiki.biligame.com/imascg/index.php?search={{ chara.name }}" title="暂用搜索方式">灰姑娘女孩bwiki</a>
+      <a class="image_switch" href="https://zh.moegirl.org/index.php?search={{ chara.name }}" title="暂用搜索方式">萌娘百科(过时)</a>
       <a class="image_switch" href="/sprite_go_ex/{{ chara.chara_id }}">表情贴图</a>
       <a class="image_switch" onclick="load_table('va_chara_{{ chara.chara_id }}', 1, [{{ chara.chara_id }}], this)">显示角色相关文本</a>
     </div>
     <table style="display:none" id="va_chara_{{ chara.chara_id }}" class="table"></table>
   </div>
+  <table style="display:none" id="va_chara_{{ chara.chara_id }}" class="table"></table>
+</div>
 </div>
 {% else %}
 <div id="raw_chara_{{ chara_id }}" class="stdcon table">
-    <table class="table">
-        <tr><td colspan="2"><b>This table is for usage by humans.
-            If you want to access this information programmatically, consider using the <a href="/static/api.html">API</a> instead.
-            It will save you the trouble of parsing this table.</b></td></tr>
-        {% for key, value in chara._asdict().items() %}
-        <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
-        {% end %}
-    </table>
+  <table class="table">
+      <tr><td colspan="2"><b>This table is for usage by humans.
+          If you want to access this information programmatically, consider using the <a href="/static/api.html">API</a> instead.
+          It will save you the trouble of parsing this table.</b></td></tr>
+      {% for key, value in chara._asdict().items() %}
+      <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+      {% end %}
+  </table>
 </div>
 {% end %}

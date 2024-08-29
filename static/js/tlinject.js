@@ -53,7 +53,7 @@ function load_translations(trans, cb) {
 
 function submit_tl_string(node, text) {
     if (!gTLInjectEnabled) {
-        tlinject_text_alert("请在提交前按左下角的按钮启用翻译。")
+        enterSimpleTextModal("请在提交前按左下角的按钮启用翻译。")
         return;
     }
 
@@ -81,7 +81,7 @@ function submit_tl_string(node, text) {
                         var table = {}
                         table[text] = submitText? submitText : text;
                         set_strings_by_table(table);
-                        exitModal();
+                        exitAllModals();
                     } else {
                         var j;
                         try {
@@ -91,9 +91,9 @@ function submit_tl_string(node, text) {
                         }
 
                         if (j.error) {
-                            tlinject_text_alert('Failed to submit translation. The server said: "' + j.error + '"');
+                            enterSimpleTextModal('Failed to submit translation. The server said: "' + j.error + '"');
                         } else {
-                            tlinject_text_alert('Failed to submit translation. The server did not return an error message.');
+                            enterSimpleTextModal('Failed to submit translation. The server did not return an error message.');
                         }
                     }
                 }
@@ -169,47 +169,68 @@ function tlinject_enable() {
     tlinject_activate()
 }
 
-function tlinject_text_alert(text, done) {
-    var finish = function() {
-        if (done) {
-            done();
-        }
-        exitModal();
-    }
-
-    enterModal(function(win) {
-        var textbox = document.createElement("p");
-        textbox.style.marginTop = 0;
-        textbox.textContent = text;
-        win.appendChild(textbox);
-
-        var bg = document.createElement("div");
-        bg.className = "button_group";
-        win.appendChild(bg);
-
-        var close = document.createElement("button");
-        close.className = "button";
-        close.textContent = "关闭";
-        close.addEventListener("click", finish, false);
-        bg.appendChild(close);
-    }, done);
-}
-
 function tlinject_prompt(forKey, done) {
     var cancel = function(event) {
         event.preventDefault();
-        exitModal();
+        exitAllModals();
     }
 
     var submit = function(txt) {
         if (txt || txt === null) {
             done(txt);
+            return true;
         }
+
+        return false;
+    }
+
+    var confirmDeleteTranslation = function() {
+        enterModal(function(win) {
+            var title = document.createElement("p");
+            title.style.marginTop = 0;
+            title.textContent = "This will remove the translated text for everyone. Are you sure you want to do this?";
+            win.appendChild(title);
+
+            var form = document.createElement("form");
+            win.appendChild(form);
+
+            var explainText = document.createElement("p");
+            explainText.className = "modal_detail_text";
+            explainText.textContent = "If you only want to see the original Japanese text, use the \"Disable TLs\" button at the bottom-left of the page."
+            form.appendChild(explainText);
+
+            var bg = document.createElement("div");
+            bg.className = "button_group";
+            form.appendChild(bg);
+
+            var subm = document.createElement("input");
+            subm.type = "submit";
+            subm.className = "button destructive";
+            subm.value = "Remove Translation";
+
+            var canc = document.createElement("button");
+            canc.className = "button";
+            canc.textContent = "Cancel";
+            canc.addEventListener("click", cancel, false);
+
+            var spac = document.createElement("div");
+            spac.className = "spacer";
+
+            bg.appendChild(subm);
+            bg.appendChild(canc);
+            bg.appendChild(spac);
+
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+                submit(null);
+                subm.disabled = true;
+            }, false);
+        })
     }
 
     enterModal(function(win) {
         var beforeText = document.createTextNode("");
-        var afterText = document.createTextNode("的翻译是什么？");
+        var afterText = document.createTextNode("的翻译是？");
         var key = document.createElement("strong");
         key.textContent = '"' + forKey + '"';
 
@@ -229,8 +250,20 @@ function tlinject_prompt(forKey, done) {
         field.placeholder = forKey;
         form.appendChild(field);
 
-        var explainText = document.createElement("small");
-        explainText.textContent = PROMPT_EXTRA_TEXT;
+        var explainText = document.createElement("p");
+        explainText.className = "modal_detail_text";
+        explainText.appendChild(document.createTextNode(PROMPT_EXTRA_TEXT + " "));
+
+        var destructiveLink = document.createElement("a");
+        destructiveLink.textContent = "Remove this translation for everyone";
+        destructiveLink.className = "destructive";
+        destructiveLink.href = "javascript: void(0)";
+        destructiveLink.addEventListener("click", function(e) { 
+            e.preventDefault();
+            confirmDeleteTranslation();
+        }, false);
+
+        explainText.appendChild(destructiveLink);
         form.appendChild(explainText);
 
         var bg = document.createElement("div");
@@ -247,23 +280,21 @@ function tlinject_prompt(forKey, done) {
         canc.textContent = "取消";
         canc.addEventListener("click", cancel, false);
 
-        var remo = document.createElement("button");
-        remo.className = "button destructive";
-        remo.textContent = "移除翻译";
-        remo.addEventListener("click", function(e) { e.preventDefault(); submit(null) }, false);
-
         var spac = document.createElement("div");
         spac.className = "spacer";
 
         bg.appendChild(subm);
         bg.appendChild(canc);
         bg.appendChild(spac);
-        bg.appendChild(remo);
 
         form.addEventListener("submit", function(event) {
             event.preventDefault();
-            submit(field.value);
-            subm.disabled = true;
+            if (submit(field.value)) {
+                subm.disabled = true;
+            } else {
+                subm.disabled = true;
+                enterSimpleTextModal("You cannot submit empty translations.", function() { subm.disabled = false; })
+            }
         }, false);
 
         requestAnimationFrame(function() {
@@ -273,5 +304,5 @@ function tlinject_prompt(forKey, done) {
 }
 
 function tlinject_about() {
-    tlinject_text_alert("此站使用众包翻译。如果有句子在你悬停在上面时高亮显示，你可以点击并提交翻译。");
+    enterSimpleTextModal("此站使用众包翻译。如果有句子在你悬停在上面时高亮显示，你可以点击并提交翻译。");
 }

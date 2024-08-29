@@ -86,6 +86,17 @@ skill_type = enum([
     
     41, "灰姑娘魔法",
     42, "呼应 <Mut.>",
+    43, "Overdrive",
+    44, "Tricolor Spike",
+
+    45, "Dominant Harmony",
+    46, "Dominant Harmony",
+    47, "Dominant Harmony",
+    48, "Dominant Harmony",
+    49, "Dominant Harmony",
+    50, "Dominant Harmony",
+
+    51, "灰姑娘礼物",
 ])
 
 skill_probability = enum([
@@ -213,6 +224,17 @@ skill_class = enum([
     41, "magic",
     
     42, "mutual",
+    43, "overdrive",
+    44, "spike",
+
+    45, "dominant",
+    46, "dominant",
+    47, "dominant",
+    48, "dominant",
+    49, "dominant",
+    50, "dominant",
+
+    51, "present",
 ])
 
 stat_dot = enum([

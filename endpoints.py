@@ -53,8 +53,9 @@ class Home(HandlerSyncedWithMaster, ErrorUtilsMixin):
         # problems
         birthdays = list(filter(lambda char: 0 < char.type < 4,
                          starlight.data.potential_birthdays(now)))
+        now_utime = now.timestamp()
 
-        recent_history = self.settings["tle"].get_history(10)
+        recent_history = [evt for evt in self.settings["tle"].get_history(10) if evt.start_time <= now_utime]
         
         # cache priming has a high overhead so prime all icons at once
         preprime_set = set()
@@ -63,7 +64,6 @@ class Home(HandlerSyncedWithMaster, ErrorUtilsMixin):
         starlight.data.cards(preprime_set)
         
         # Now split the events into current/past.
-        now_utime = actually_now.timestamp()
         current_events = [event for event in recent_history 
             if now_utime >= event.start_time and now_utime < event.end_time]
         # Always put events first like the old box list.
@@ -151,6 +151,9 @@ class Character(HandlerSyncedWithMaster, ErrorUtilsMixin):
         ga_av = self.settings["tle"].gacha_availability(card_ids, starlight.data.gacha_ids())
         for k in ga_av:
             availability[k].extend(ga_av[k])
+
+        # This is so the initial (N or R) card appears first.
+        acard.sort(key=lambda x: (0 if x[0].rarity < 5 else 1, x[0].id))
 
         if achar:
             self.set_header("Content-Type", "text/html")
